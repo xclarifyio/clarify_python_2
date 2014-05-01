@@ -8,7 +8,7 @@
 import sys
 sys.path.append('..')
 from op3nvoice_python_2 import op3nvoice
-from op3nvoice_python_2 import op3nvoice_plus
+import common
 
 ak = None # our app key.
 
@@ -18,41 +18,12 @@ def set_appkey(key):
 
 def update_all_names():  ## Will fail if no bundles available.
     c = op3nvoice.Connection(ak)
-
-    # Update all the names.
-    has_next = True
-    next_href = None # if None, retrieves first page
-    while has_next:
-        # Get a page and print content.
-        _bl = op3nvoice.get_bundle_list(c, next_href)
-        bl = op3nvoice_plus.BundleList(_bl)
-        for i in bl.get_bundle_hrefs():
-            update_name(c, i)
-        # Setup for next possible page.
-        if bl.has_next_href():
-            next_href = bl.get_next_href()
-        else:
-            has_next = False
-
-    # Print all the new names.
-    has_next = True
-    next_href = None # if None, retrieves first page
-    while has_next:
-        # Get a page and print content.
-        _bl = op3nvoice.get_bundle_list(c, next_href)
-        bl = op3nvoice_plus.BundleList(_bl)
-        for i in bl.get_bundle_hrefs():
-            print_name(c, i)
-        # Setup for next possible page.
-        if bl.has_next_href():
-            next_href = bl.get_next_href()
-        else:
-            has_next = False
+    common.bundle_list_map(update_name, c)
+    common.bundle_list_map(print_name, c)
         
 def update_name(conn, href):
-    _b = op3nvoice.get_bundle(conn, href)
-    b = op3nvoice_plus.Bundle(_b)
-    name = b.get_name()
+    b = op3nvoice.get_bundle(conn, href)
+    name = b.get('name')
     if name == None:
         name = 'no name updated'
     else:
@@ -61,9 +32,8 @@ def update_name(conn, href):
     op3nvoice.update_bundle(conn, href, name)
 
 def print_name(conn, href):
-    _b = op3nvoice.get_bundle(conn, href)
-    b = op3nvoice_plus.Bundle(_b)
-    print href + ' is named ' + b.get_name()
+    b = op3nvoice.get_bundle(conn, href)
+    print href + ' is named ' + b['name']
     
 
 def all(_ak=None):

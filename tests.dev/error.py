@@ -8,7 +8,6 @@
 import sys
 sys.path.append('..')
 from op3nvoice_python_2 import op3nvoice
-from op3nvoice_python_2 import op3nvoice_plus
 
 ak = None # our app key.
 
