@@ -11,12 +11,12 @@ Installing
 
 1. Clone the repository:
 
-| git clone http://github.com/OP3Nvoice/op3nvoice_python_2.git op3nvoice_python_2
-| cd op3nvoice_python_2/op3nvoice_python_2/
+   git clone http://github.com/OP3Nvoice/op3nvoice_python_2.git op3nvoice_python_2
+   cd op3nvoice_python_2/op3nvoice_python_2/
 
 2. Install
 
-| ./setup.py install
+   ./setup.py install
 
 You may need to use sudo if you don't have permission to install.
 
