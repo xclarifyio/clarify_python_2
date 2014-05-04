@@ -7,7 +7,6 @@ Structural
 
 * PIP packaging (https://github.com/audreyr/cookiecutter-pypackage)
 * Implement Scrutinizer
-* Separate REST library and PLUS library.
 
 Documentation
 -------------
@@ -18,7 +17,6 @@ Tests
 -----
 
 * Base function unit tests.
-* Test retrieving embedded item when count == 1.
 
 Examples
 --------
@@ -36,7 +34,6 @@ Implementation
 --------------
 
 * Modify embed list handling to match new system (bundle lists & search).
-* Intialize Bundle() with an href and have it call get_bundle(href)?
 * In utils, generic named process_embed() maybe should be
   process_bundle_collection embed or something. When we have different
   types of models we'll have different embeds. We will also have
