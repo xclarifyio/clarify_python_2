@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Paul Murphy (`@murphy`)
+* Paul Murphy (`@murphy <https://github.com/murphy`_)
 
 Contributors
 ------------
