@@ -10,26 +10,26 @@ import httplib
 import collections
 import json
 import urlparse
+from __init__ import __version__
+from __init__ import __api_version__
+from __init__ import __api_lib_name__
+from __init__ import __host__
+from __init__ import __debug_level__
 
 BUNDLES_PATH = 'bundles'
 SEARCH_PATH = 'search'
-API_VERSION = 'v1'
-HELPER_LIB_NAME = 'op3nvoice-python-2'
-HELPER_LIB_VERSION = '0.7.0'
 PYTHON_VERSION = '.'.join(map(str, sys.version_info[:3]))
-HOST = 'api-beta.OP3Nvoice.com'
-DEBUG_LEVEL = 0 # Set to 1 if you want to see debug output from HTTP ops.
+
+_key = None
 
 ###
 ###  The API functions.
 ###
 
-def get_bundle_list(connection=None, href=None, limit=None,
-                    embed_items=None, embed_tracks=None,
-                    embed_metadata=None):
+def get_bundle_list(href=None, limit=None, embed_items=None,
+                    embed_tracks=None, embed_metadata=None):
     """Get a list of available bundles.
 
-    'connection' may not be None.
     'href' the relative href to the bundle list to retriev. If None, the
     first bundle list will be returned.
     'limit' the maximum number of bundles to include in the
@@ -51,16 +51,14 @@ def get_bundle_list(connection=None, href=None, limit=None,
     APIDataException."""
 
     # Argument error checking.
-    assert connection != None
     assert limit == None or limit > 0
 
     if href == None:
-        j = _get_first_bundle_list(connection, limit, embed_items,
-                                   embed_tracks, embed_metadata)
+        j = _get_first_bundle_list(limit, embed_items, embed_tracks,
+                                   embed_metadata)
     else:
-        j = _get_additional_bundle_list(connection, href, limit,
-                                        embed_items, embed_tracks,
-                                        embed_metadata)
+        j = _get_additional_bundle_list(href, limit, embed_items,
+                                        embed_tracks, embed_metadata)
 
     # Convert the JSON to a python data struct.
 
@@ -74,12 +72,10 @@ def get_bundle_list(connection=None, href=None, limit=None,
 
     return result
 
-def _get_first_bundle_list(connection=None, limit=None,
-                           embed_items=None, embed_tracks=None,
-                           embed_metadata=None):
+def _get_first_bundle_list(limit=None, embed_items=None,
+                           embed_tracks=None, embed_metadata=None):
     """Get a list of available bundles.
 
-    'connection' may not be None.
     'limit' may be None, which implies API default.  If not None, must be > 1.
     'embed_items' True will embed item data in the result.
     'embed_tracks' True will embed track data in the embeded items.
@@ -93,7 +89,7 @@ def _get_first_bundle_list(connection=None, limit=None,
     If the response status is not 2xx, throws an APIException."""
 
     # Prepare the data we're going to include in our query.
-    path = '/' + API_VERSION + '/' + BUNDLES_PATH
+    path = '/' + __api_version__ + '/' + BUNDLES_PATH
     
     data = None
     fields = {}
@@ -108,7 +104,7 @@ def _get_first_bundle_list(connection=None, limit=None,
     if len(fields) > 0:
         data = fields
     
-    raw_result = connection.get(path, data)
+    raw_result = get(path, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -117,12 +113,10 @@ def _get_first_bundle_list(connection=None, limit=None,
 
     return result
 
-def _get_additional_bundle_list(connection=None, href=None, limit=None,
-                                embed_items=None, embed_tracks=None,
-                                embed_metadata=None):
+def _get_additional_bundle_list(href=None, limit=None, embed_items=None,
+                                embed_tracks=None, embed_metadata=None):
     """Get next, previous, first, last list (page) of available bundles.
 
-    'connection' may not be None.
     'href' the href to retrieve the bundles.
 
     All other arguments override arguments in the href.
@@ -150,7 +144,7 @@ def _get_additional_bundle_list(connection=None, href=None, limit=None,
     if final_embed != None:
         data['embed'] = final_embed
 
-    raw_result = connection.get(path, data)
+    raw_result = get(path, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -159,12 +153,10 @@ def _get_additional_bundle_list(connection=None, href=None, limit=None,
 
     return result
 
-def create_bundle(connection=None, name=None, media_url=None,
-                  audio_channel=None, metadata=None, notify_url=None):
+def create_bundle(name=None, media_url=None, audio_channel=None,
+                  metadata=None, notify_url=None):
                   
     """Create a new bundle. 
-
-    'connection' may not be None.
 
     'metadata' may be None, or an object that can be converted to a JSON
     string.  See API documentation for restrictions.  The conversion
@@ -180,11 +172,8 @@ def create_bundle(connection=None, name=None, media_url=None,
     If the JSON to python data struct conversion fails, throws an
     APIDataException."""
 
-    # Argument error checking.
-    assert connection != None
-
     # Prepare the data we're going to include in our bundle creation.
-    path = '/' + API_VERSION + '/' + BUNDLES_PATH
+    path = '/' + __api_version__ + '/' + BUNDLES_PATH
 
     data = None
 
@@ -203,7 +192,7 @@ def create_bundle(connection=None, name=None, media_url=None,
     if len(fields) > 0:
         data = fields
 
-    raw_result = connection.post(path, data)
+    raw_result = post(path, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -220,10 +209,9 @@ def create_bundle(connection=None, name=None, media_url=None,
 
     return result
     
-def delete_bundle(connection=None, href=None):
+def delete_bundle(href=None):
     """Delete a bundle.
 
-    'connection' may not be None.
     'href' the relative href to the bundle. May not be None.
 
     Returns nothing.
@@ -231,19 +219,16 @@ def delete_bundle(connection=None, href=None):
     If the response status is not 204, throws an APIException."""
 
     # Argument error checking.
-    assert connection != None
     assert href != None
 
-    raw_result = connection.delete(href)
+    raw_result = delete(href)
 
     if raw_result.status != 204:
         raise APIException(raw_result.status, raw_result.json)
 
-def get_bundle(connection=None, href=None,
-               embed_tracks=False, embed_metadata=False):
+def get_bundle(href=None, embed_tracks=False, embed_metadata=False):
     """Get a bundle.
 
-    'connection' may not be None.
     'href' the relative href to the bundle. May not be None.
     'embed_tracks' determines whether or not to include track
     information in the response.
@@ -258,7 +243,6 @@ def get_bundle(connection=None, href=None,
     APIDataException."""
 
     # Argument error checking.
-    assert connection != None
     assert href != None
 
     data = None
@@ -272,7 +256,7 @@ def get_bundle(connection=None, href=None,
     if len(fields) > 0:
         data = fields
 
-    raw_result = connection.get(href, data)
+    raw_result = get(href, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -289,12 +273,10 @@ def get_bundle(connection=None, href=None,
 
     return result
 
-def update_bundle(connection=None, href=None, name=None,
-                  notify_url=None, version=None):
+def update_bundle(href=None, name=None, notify_url=None, version=None):
     """Update a bundle.  Note that only the 'name' and 'notify_url' can
     be update.
 
-    'connection' may not be None.
     'href' the relative href to the bundle. May not be None.
     'name' the name of the bundle.  May be None.
     'notify_url' the URL for notifications on this bundle.
@@ -311,7 +293,6 @@ def update_bundle(connection=None, href=None, name=None,
 
     
     # Argument error checking.
-    assert connection != None
     assert href != None
     assert version == None or isinstance(version, int)
 
@@ -329,7 +310,7 @@ def update_bundle(connection=None, href=None, name=None,
     if len(fields) > 0:
         data = fields
 
-    raw_result = connection.put(href, data)
+    raw_result = put(href, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -346,10 +327,9 @@ def update_bundle(connection=None, href=None, name=None,
 
     return result
 
-def get_metadata(connection=None, href=None):
+def get_metadata(href=None):
     """Get metadata.
 
-    'connection' may not be None.
     'href' the relative href to the bundle. May not be None.
 
     Returns a data structure equivalent to the JSON returned by the API.
@@ -360,10 +340,9 @@ def get_metadata(connection=None, href=None):
     APIDataException."""
     
     # Argument error checking.
-    assert connection != None
     assert href != None
 
-    raw_result = connection.get(href)
+    raw_result = get(href)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -380,11 +359,10 @@ def get_metadata(connection=None, href=None):
 
     return result
 
-def update_metadata(connection=None, href=None, metadata=None, version=None):
+def update_metadata(href=None, metadata=None, version=None):
     """Update the metadata in a bundle.
     be update.
 
-    'connection' may not be None.
     'href' the relative href to the metadata. May not be None.
     'metadata' may be None, or an object that can be converted to a JSON
     string.  See API documentation for restrictions.  The conversion
@@ -401,7 +379,6 @@ def update_metadata(connection=None, href=None, metadata=None, version=None):
     APIDataException."""
 
     # Argument error checking.
-    assert connection != None
     assert href != None
     assert metadata != None
     assert version == None or isinstance(version, int)
@@ -416,7 +393,7 @@ def update_metadata(connection=None, href=None, metadata=None, version=None):
 
     data = fields 
 
-    raw_result = connection.put(href, data)
+    raw_result = put(href, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -433,10 +410,9 @@ def update_metadata(connection=None, href=None, metadata=None, version=None):
 
     return result
     
-def delete_metadata(connection=None, href=None):
+def delete_metadata(href=None):
     """Delete metadata.
 
-    'connection' may not be None.
     'href' the relative href to the bundle. May not be None.
 
     Returns nothing.
@@ -444,20 +420,18 @@ def delete_metadata(connection=None, href=None):
     If the response status is not 204, throws an APIException."""
 
     # Argument error checking.
-    assert connection != None
     assert href != None
 
-    raw_result = connection.delete(href)
+    raw_result = delete(href)
 
     if raw_result.status != 204:
         raise APIException(raw_result.status, raw_result.json)
 
-def create_track(connection=None, href=None, media_url=None, label=None,
+def create_track(href=None, media_url=None, label=None,
                  audio_channel=None, source=None):
     """Add a new track to a bundle.  Note that the total number of
     allowable tracks is limited. See the API documentation for details.
 
-    'connection' may not be None.
     'href' the relative href to the tracks list. May not be None.
     'media_url' public URL to media file. May not be None.
     'label' short name for the track. May be None.
@@ -474,7 +448,6 @@ def create_track(connection=None, href=None, media_url=None, label=None,
     data struct conversion fails, throws an APIDataException."""
 
     # Argument error checking.
-    assert connection != None
     assert href != None
     assert media_url != None
 
@@ -493,7 +466,7 @@ def create_track(connection=None, href=None, media_url=None, label=None,
     if len(fields) > 0:
         data = fields
 
-    raw_result = connection.post(href, data)
+    raw_result = post(href, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -510,13 +483,11 @@ def create_track(connection=None, href=None, media_url=None, label=None,
 
     return result
         
-def update_track(connection=None, href=None, track=None, media_url=None,
-                 label=None, audio_channel=None, source=None,
-                 version=None):
+def update_track(href=None, track=None, media_url=None, label=None,
+                 audio_channel=None, source=None, version=None):
     """Add a new track to a bundle.  Note that the total number of
     allowable tracks is limited. See the API documentation for details.
 
-    'connection' may not be None.
     'href' the relative href to the tracks list. May not be None.
     'track_index' the track to be updated. See API docs for default & limits.
     'media_url' public URL to media file. May not be None.
@@ -537,7 +508,6 @@ def update_track(connection=None, href=None, track=None, media_url=None,
     APIDataException."""
 
     # Argument error checking.
-    assert connection != None
     assert href != None
     assert media_url != None
     assert version == None or isinstance(version, int)
@@ -561,7 +531,7 @@ def update_track(connection=None, href=None, track=None, media_url=None,
     if len(fields) > 0:
         data = fields
 
-    raw_result = connection.put(href, data)
+    raw_result = put(href, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -578,10 +548,9 @@ def update_track(connection=None, href=None, track=None, media_url=None,
 
     return result
 
-def get_track_list(connection=None, href=None):
+def get_track_list(href=None):
     """Get track list.
 
-    'connection' may not be None.
     'href' the relative href to the bundle. May not be None.
 
     Returns a data structure equivalent to the JSON returned by the API.
@@ -592,10 +561,9 @@ def get_track_list(connection=None, href=None):
     APIDataException."""
 
     # Argument error checking.
-    assert connection != None
     assert href != None
 
-    raw_result = connection.get(href)
+    raw_result = get(href)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -612,10 +580,9 @@ def get_track_list(connection=None, href=None):
 
     return result
 
-def delete_track(connection=None, href=None, track=None):
+def delete_track(href=None, track=None):
     """Delete a track, or all the tracks.
 
-    'connection' may not be None.
     'href' the relative href to the bundle. May not be None.
     'track' the index of the track to delete. If none is given,
     all tracks are deleted.
@@ -625,7 +592,6 @@ def delete_track(connection=None, href=None, track=None):
     If the response status is not 204, throws an APIException."""
 
     # Argument error checking.
-    assert connection != None
     assert href != None
 
     # Deal with any parameters that need to be passed in.
@@ -638,18 +604,17 @@ def delete_track(connection=None, href=None, track=None):
     if len(fields) > 0:
         data = fields
 
-    raw_result = connection.delete(href, data)
+    raw_result = delete(href, data)
 
     if raw_result.status != 204:
         raise APIException(raw_result.status, raw_result.json)
 
-def search(connection=None, href=None,
-           query=None, query_field=None, filter=None, limit=None, 
-           embed_items=None, embed_tracks=None, embed_metadata=None):
+def search(href=None, query=None, query_field=None, filter=None,
+           limit=None, embed_items=None, embed_tracks=None,
+           embed_metadata=None):
            
     """Search a media collection.
 
-    'connection' may not be None.
     'href' the relative href to the bundle list to retriev. If None, the
     first bundle list will be returned.
     'query' See API docs for full description. May not be None.
@@ -674,16 +639,15 @@ def search(connection=None, href=None,
     APIDataException."""
 
     # Argument error checking.
-    assert connection != None
     assert query != None
     assert limit == None or limit > 0
     
     if href == None:
-        j = _search_p1(connection, query, query_field, filter, limit,
-                       embed_items, embed_tracks, embed_metadata)
+        j = _search_p1(query, query_field, filter, limit, embed_items,
+                       embed_tracks, embed_metadata)
                                    
     else:
-        j = _search_pn(connection, href, query, query_field, filter, limit,
+        j = _search_pn(href, query, query_field, filter, limit,
                        embed_items, embed_tracks, embed_metadata)
                                         
 
@@ -699,11 +663,11 @@ def search(connection=None, href=None,
 
     return result
 
-def _search_p1(connection=None,
-               query=None, query_field=None, filter=None, limit=None, 
-               embed_items=None, embed_tracks=None, embed_metadata=None):
+def _search_p1(query=None, query_field=None, filter=None, limit=None,
+               embed_items=None, embed_tracks=None,
+               embed_metadata=None):
     # Prepare the data we're going to include in our query.
-    path = '/' + API_VERSION + '/' + SEARCH_PATH
+    path = '/' + __api_version__ + '/' + SEARCH_PATH
     
     data = None
     fields = {}
@@ -723,7 +687,7 @@ def _search_p1(connection=None,
     if len(fields) > 0:
         data = fields
     
-    raw_result = connection.get(path, data)
+    raw_result = get(path, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -732,9 +696,9 @@ def _search_p1(connection=None,
 
     return result
 
-def _search_pn(connection=None,href=None,
-               query=None, query_field=None, filter=None, limit=None, 
-               embed_items=None, embed_tracks=None, embed_metadata=None):
+def _search_pn(href=None, query=None, query_field=None, filter=None,
+               limit=None, embed_items=None, embed_tracks=None,
+               embed_metadata=None):
     url_components = urlparse.urlparse(href)
     path = url_components.path
     data = urlparse.parse_qs(url_components.query)
@@ -755,7 +719,7 @@ def _search_pn(connection=None,href=None,
     if final_embed != None:
         data['embed'] = final_embed
 
-    raw_result = connection.get(path, data)
+    raw_result = get(path, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
         raise APIException(raw_result.status, raw_result.json)
@@ -765,7 +729,7 @@ def _search_pn(connection=None,href=None,
     return result
 
 ###
-### Connection class and functions to perform basic HTTP operations.
+### Functions to set the API key and perform basic HTTP operations.
 ###
 
 
@@ -773,207 +737,182 @@ def _search_pn(connection=None,href=None,
 # functions and consumed by the REST cover functions.
 Result = collections.namedtuple('Result', ['status', 'json'])
 
-class Connection:
-    """This is a singleton class. It's not thread-safe."""
+def set_key(key):
+    """The API key.  May not be None."""
+    global _key
+    assert key != None
+    _key = key
 
-    __instance = None
+def _get_headers():
+    # So that we can track what library and what version of the
+    # helper library people are using and so that we get a
+    # sense of what versions of python we need to support.
 
-    class __impl:
-        """Inner implementation class. Workaround lack of class methods
-        in python."""
+    if _key == None:
+        raise APIConfigurationException('set_key() must be called before any API operations can be performed.')
+
+    user_agent = __api_lib_name__ + '/' + __api_version__ + \
+                 '/' + PYTHON_VERSION
         
-        def implid(self):
-            """Return the implementation ID. For testing purposes only."""
-            return id(self)
+    return {'Authorization': 'Bearer ' + _key, 
+            'User-Agent': user_agent,
+            'Content-Type': 'application/x-www-form-urlencoded'}
 
-    def __init__(self):
-        """This initializer will raise an exception. Don't use it."""
-        raise NotImplementedError('Please use __init__(key)')
+def get(path, data=None):
+    """Executes a GET.
+
+    'path' may not be None. Should include the full path to the resource.
+    'data' may be None or a dictionary. These values will be appended
+    to the path as key/value pairs.
+        
+    Returns a named tuple that includes:
+        
+    status: the HTTP status code
+    json: the returned JSON-HAL
+
+    If the key was not set, throws an APIConfigurationException."""
+
+    # Argument error checking.
+    assert path != None
+        
+    # Open our connection.
+    connection = httplib.HTTPSConnection(__host__)
+    if __debug_level__ > 0:
+        connection.set_debuglevel(__debug_level__)
+
+    # Execute the request.
+    fullpath = path
+    if data != None:
+        fullpath += '?' + urllib.urlencode(data, True)
+    connection.request('GET', fullpath, '', _get_headers())
+    response = connection.getresponse()
+
+    # Extreact the result.
+    s = response.status
+    j = response.read()
+
+    # Close our connection.
+    connection.close()
+
+    # return (status, json)
+    return Result(status=s, json=j)
+
+def post(path, data):
+    """Executes a POST.
+
+    'path' may not be None, should not inlude a version number, and
+    should not include a leading '/'
+    'data' may be None or a dictionary.
+
+    Returns a named tuple that includes:
+        
+    status: the HTTP status code
+    json: the returned JSON-HAL
     
-    def __init__(self, key):
-        """Create instance."""
+    If the key was not set, throws an APIConfigurationException."""
 
-        if Connection.__instance is None:
-            Connection.__instance = Connection.__impl()
-            self.set_key(key)
-
-    def __getattr__(self, attr):
-        """Delegate access to implemetation."""
-        return getattr(self.__instance, attr)
-
-    def __setattr__(self, attr, value):
-        """Delegate access to implementation."""
-        setattr(self.__instance, attr, value)
-
-    def __hasattr__(self, attr):
-        """Delegate access to implementation."""
-        hasattr(self.__instance, attr)
-
-    def set_key(self, value):
-        self.__setattr__('key', value)
-
-    def get_key(self):
-        return self.__getattr__('key')
-
-    def get_headers(self):
-        # So that we can track what library and what version of the
-        # helper library people are using and so that we get a
-        # sense of what versions of python we need to support.
-        user_agent = HELPER_LIB_NAME + '/' + HELPER_LIB_VERSION + \
-                     '/' + PYTHON_VERSION
+    # Argument error checking.
+    assert path != None
+    assert data == None or isinstance(data, dict)
         
-        return {'Authorization': 'Bearer ' + self.get_key(),
-                'User-Agent': user_agent,
-                'Content-Type': 'application/x-www-form-urlencoded'}
+    # Open our connection.
+    connection = httplib.HTTPSConnection(__host__)
+    if __debug_level__ > 0:
+        connection.set_debuglevel(__debug_level__)
 
-    def get(self, path, data=None):
-        """Executes a GET.
+    # Execute the request.
+    encoded_data = ''
+    if data != None:
+        encoded_data = urllib.urlencode(data, True)
+    connection.request('POST', path, encoded_data, _get_headers())
+    response = connection.getresponse()
 
-        'path' may not be None. Should include the full path to the resource.
-        'data' may be None or a dictionary. These values will be appended
-        to the path as key/value pairs.
+    # Extract the result.
+    s = response.status
+    j = response.read()
+
+    # Close our connection.
+    connection.close()
+
+    # return (status, json)
+    return Result(status=s, json=j)
+
+def delete(path, data=None):
+    """Executes a DELETE.
+
+    'path' may not be None. Should include the full path to the resoure.
+    'data' may be None or a dictionary.
+
+    Returns a named tuple that includes:
         
-        Returns a named tuple that includes:
+    status: the HTTP status code
+    json: the returned JSON-HAL
+
+    If the key was not set, throws an APIConfigurationException."""    
+
+    # Argument error checking.
+    assert path != None
+    assert data == None or isinstance(data, dict)
+
+    # Open our connection.
+    connection = httplib.HTTPSConnection(__host__)
+    if __debug_level__ > 0:
+        connection.set_debuglevel(__debug_level__)
+
+    # Execute the request.
+    encoded_data = ''
+    if data != None:
+        encoded_data = urllib.urlencode(data, True)
+    connection.request('DELETE', path, encoded_data, _get_headers())
+    response = connection.getresponse()
+
+    # Extract the result.
+    s = response.status
+    j = response.read()
+
+    # Close our connection.
+    connection.close()
+
+    # return (status, json)
+    return Result(status=s, json=j)
         
-        status: the HTTP status code
-        json: the returned JSON-HAL"""
+def put(path, data):
+    """Executes a PUT.
 
-        # Argument error checking.
-        assert path != None
+    'path' may not be None. Should include the full path to the resoure.
+    'data' may be None or a dictionary.
+
+    Returns a named tuple that includes:
         
-        # Open our connection.
-        connection = httplib.HTTPSConnection(HOST)
-        if DEBUG_LEVEL > 0:
-            connection.set_debuglevel(DEBUG_LEVEL)
+    status: the HTTP status code
+    json: the returned JSON-HAL
 
-        # Execute the request.
-        fullpath = path
-        if data != None:
-            fullpath += '?' + urllib.urlencode(data, True)
-        connection.request('GET', fullpath, '', self.get_headers())
-        response = connection.getresponse()
+    If the key was not set, throws an APIConfigurationException."""
 
-        # Extreact the result.
-        s = response.status
-        j = response.read()
-
-        # Close our connection.
-        connection.close()
-
-        # return (status, json)
-        return Result(status=s, json=j)
-
-    def post(self, path, data):
-        """Executes a POST.
-
-        'path' may not be None, should not inlude a version number, and
-        should not include a leading '/'
-        'data' may be None or a dictionary.
-
-        Returns a named tuple that includes:
+    # Argument error checking.
+    assert path != None
+    assert data == None or isinstance(data, dict)
         
-        status: the HTTP status code
-        json: the returned JSON-HAL"""
+    # Open our connection.
+    connection = httplib.HTTPSConnection(__host__)
+    if __debug_level__ > 0:
+        connection.set_debuglevel(__debug_level__)
 
-        # Argument error checking.
-        assert path != None
-        assert data == None or isinstance(data, dict)
-        
-        # Open our connection.
-        connection = httplib.HTTPSConnection(HOST)
-        if DEBUG_LEVEL > 0:
-            connection.set_debuglevel(DEBUG_LEVEL)
+    # Execute the request.
+    encoded_data = ''
+    if data != None:
+        encoded_data = urllib.urlencode(data, True)
+    connection.request('PUT', path, encoded_data, _get_headers())
+    response = connection.getresponse()
 
-        # Execute the request.
-        encoded_data = ''
-        if data != None:
-            encoded_data = urllib.urlencode(data, True)
-        connection.request('POST', path, encoded_data, self.get_headers())
-        response = connection.getresponse()
+    # Extract the result.
+    s = response.status
+    j = response.read()
 
-        # Extract the result.
-        s = response.status
-        j = response.read()
+    # Close our connection.
+    connection.close()
 
-        # Close our connection.
-        connection.close()
-
-        # return (status, json)
-        return Result(status=s, json=j)
-
-    def delete(self, path, data=None):
-        """Executes a DELETE.
-
-        'path' may not be None. Should include the full path to the resoure.
-        'data' may be None or a dictionary.
-
-        Returns a named tuple that includes:
-        
-        status: the HTTP status code
-        json: the returned JSON-HAL"""
-
-        # Argument error checking.
-        assert path != None
-        assert data == None or isinstance(data, dict)
-
-        # Open our connection.
-        connection = httplib.HTTPSConnection(HOST)
-        if DEBUG_LEVEL > 0:
-            connection.set_debuglevel(DEBUG_LEVEL)
-
-        # Execute the request.
-        encoded_data = ''
-        if data != None:
-            encoded_data = urllib.urlencode(data, True)
-        connection.request('DELETE', path, encoded_data, self.get_headers())
-        response = connection.getresponse()
-
-        # Extract the result.
-        s = response.status
-        j = response.read()
-
-        # Close our connection.
-        connection.close()
-
-        # return (status, json)
-        return Result(status=s, json=j)
-        
-    def put(self, path, data):
-        """Executes a PUT.
-
-        'path' may not be None. Should include the full path to the resoure.
-        'data' may be None or a dictionary.
-
-        Returns a named tuple that includes:
-        
-        status: the HTTP status code
-        json: the returned JSON-HAL"""
-
-        # Argument error checking.
-        assert path != None
-        assert data == None or isinstance(data, dict)
-        
-        # Open our connection.
-        connection = httplib.HTTPSConnection(HOST)
-        if DEBUG_LEVEL > 0:
-            connection.set_debuglevel(DEBUG_LEVEL)
-
-        # Execute the request.
-        encoded_data = ''
-        if data != None:
-            encoded_data = urllib.urlencode(data, True)
-        connection.request('PUT', path, encoded_data, self.get_headers())
-        response = connection.getresponse()
-
-        # Extract the result.
-        s = response.status
-        j = response.read()
-
-        # Close our connection.
-        connection.close()
-
-        # return (status, json)
-        return Result(status=s, json=j)
+    return Result(status=s, json=j)
 
 ###
 ###  Exceptions.
@@ -1024,6 +963,17 @@ class APIException(Exception):
 
         return self._data_struct[KEY_CODE]
 
+class APIConfigurationException(Exception):
+    """Thrown when the API isn't properly configured."""
+
+    msg = None
+
+    def __init__(self, msg):
+        self.msg = msg
+
+    def get_message(self):
+        """Returns the error message."""
+        return self.msg
 
 class APIDataException(Exception):
     """Thown when we can't parse the data returned by an API call."""

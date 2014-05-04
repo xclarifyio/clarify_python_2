@@ -19,26 +19,26 @@ def set_appkey(key):
     ak = key
 
 def track_create_and_list():
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
 
     print '*** Creating a bundle with a track...'
 
     # Create a bundle with a track.
-    br = op3nvoice.create_bundle(c, name='track tester', media_url=MEDIA_URL1)
+    br = op3nvoice.create_bundle(name='track tester', media_url=MEDIA_URL1)
 
     # List the tracks.
-    tl = op3nvoice.get_track_list(c, br['_links']['o3v:tracks']['href'])
+    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 
     print '*** Adding a track to the bundle...'
 
     # Add a track.
-    r = op3nvoice.create_track(c, br['_links']['o3v:tracks']['href'],
+    r = op3nvoice.create_track(br['_links']['o3v:tracks']['href'],
                                media_url=MEDIA_URL2)
                        
     # List the tracks.
-    tl = op3nvoice.get_track_list(c, br['_links']['o3v:tracks']['href'])
+    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 

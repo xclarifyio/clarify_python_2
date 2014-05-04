@@ -17,22 +17,22 @@ def set_appkey(key):
     ak = key
 
 def update_all_names():  ## Will fail if no bundles available.
-    c = op3nvoice.Connection(ak)
-    common.bundle_list_map(update_name, c)
-    common.bundle_list_map(print_name, c)
+    op3nvoice.set_key(ak)
+    common.bundle_list_map(update_name)
+    common.bundle_list_map(print_name)
         
-def update_name(conn, href):
-    b = op3nvoice.get_bundle(conn, href)
+def update_name(href):
+    b = op3nvoice.get_bundle(href)
     name = b.get('name')
     if name == None:
         name = 'no name updated'
     else:
         name = name + ' updated'
         print 'Updating name for ' + href
-    op3nvoice.update_bundle(conn, href, name)
+    op3nvoice.update_bundle(href, name)
 
-def print_name(conn, href):
-    b = op3nvoice.get_bundle(conn, href)
+def print_name(href):
+    b = op3nvoice.get_bundle(href)
     print href + ' is named ' + b['name']
     
 

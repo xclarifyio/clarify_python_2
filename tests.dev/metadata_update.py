@@ -16,22 +16,22 @@ def set_appkey(key):
     ak = key
 
 def create_and_update():
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
 
     # Create a bundle with some metadata.
     data = {'wife': 'Medea', 'husband': 'Jason'}
-    br = op3nvoice.create_bundle(c, name='metadata update test',
+    br = op3nvoice.create_bundle(name='metadata update test',
                                  metadata=data)
 
     # Retrieve the metadata and print it.
     href = br['_links']['o3v:metadata']['href']
-    m = op3nvoice.get_metadata(c, href)
+    m = op3nvoice.get_metadata(href)
     print_metadata_info(m)
 
     # Change the metadata and print it.
     data2 = {'wife': 'Clytemnestra', 'husband': ['Agamemnon', 'Aegisthus']}
-    op3nvoice.update_metadata(c, href, data2)
-    m = op3nvoice.get_metadata(c, href)
+    op3nvoice.update_metadata(href, data2)
+    m = op3nvoice.get_metadata(href)
     print_metadata_info(m)
 
 def print_metadata_info(m):

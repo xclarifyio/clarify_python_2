@@ -16,13 +16,13 @@ def set_appkey(key):
     global ak
     ak = key
 
-def delete_bundle(connection, href):
+def delete_bundle(href):
     print 'Deleting ' + href
-    op3nvoice.delete_bundle(connection, href)
+    op3nvoice.delete_bundle(href)
 
 def delete_all():
-    c = op3nvoice.Connection(ak)
-    common.bundle_list_map(delete_bundle, c)
+    op3nvoice.set_key(ak)
+    common.bundle_list_map(delete_bundle)
 
 def all(_ak=None):
     if _ak != None:

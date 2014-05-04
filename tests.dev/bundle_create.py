@@ -16,11 +16,11 @@ def set_appkey(key):
     ak = key
 
 def create_26():
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
     for i in range(0,11):
-        br = op3nvoice.create_bundle(c, str(i))
+        br = op3nvoice.create_bundle(str(i))
         href = br['_links']['self']['href']
-        b = op3nvoice.get_bundle(c, href)
+        b = op3nvoice.get_bundle(href)
         print 'Created bundle ' + href + ' with name: ' + b['name']
 
 def all(_ak=None):

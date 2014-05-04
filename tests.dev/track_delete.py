@@ -20,7 +20,7 @@ def set_appkey(key):
     ak = key
 
 def delete_1_track():
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
 
     print '*** Creating a bundle with no tracks...'
     print '*** Adding a track to the bundle...'
@@ -28,34 +28,34 @@ def delete_1_track():
     print '*** Adding a track to the bundle...'
 
     # Create a bundle with no track.
-    br = op3nvoice.create_bundle(c, name='track tester')
+    br = op3nvoice.create_bundle(name='track tester')
     href = br['_links']['o3v:tracks']['href']
 
     # Add three tracks.
-    r = op3nvoice.create_track(c, href,
+    r = op3nvoice.create_track(href,
                                media_url=MEDIA_URL1, label='first label')
-    r = op3nvoice.create_track(c, href,
+    r = op3nvoice.create_track(href,
                                media_url=MEDIA_URL2, label='second label')
-    r = op3nvoice.create_track(c, href,
+    r = op3nvoice.create_track(href,
                                media_url=MEDIA_URL3, label='third label')
                        
     # List the tracks.
-    tl = op3nvoice.get_track_list(c, br['_links']['o3v:tracks']['href'])
+    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 
     print '*** Deleting the second track (index 1)...'
 
     # Update the track.
-    r = op3nvoice.delete_track(c, href, track=1)
+    r = op3nvoice.delete_track(href, track=1)
 
     # List the tracks.
-    tl = op3nvoice.get_track_list(c, br['_links']['o3v:tracks']['href'])
+    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 
 def delete_all_tracks():
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
 
     print '*** Creating a bundle with no tracks...'
     print '*** Adding a track to the bundle...'
@@ -63,29 +63,29 @@ def delete_all_tracks():
     print '*** Adding a track to the bundle...'
 
     # Create a bundle with no track.
-    br = op3nvoice.create_bundle(c, name='track tester')
+    br = op3nvoice.create_bundle(name='track tester')
     href = br['_links']['o3v:tracks']['href']
 
     # Add three tracks.
-    r = op3nvoice.create_track(c, href,
+    r = op3nvoice.create_track(href,
                                media_url=MEDIA_URL1, label='first label')
-    r = op3nvoice.create_track(c, href,
+    r = op3nvoice.create_track(href,
                                media_url=MEDIA_URL2, label='second label')
-    r = op3nvoice.create_track(c, href,
+    r = op3nvoice.create_track(href,
                                media_url=MEDIA_URL3, label='third label')
                        
     # List the tracks.
-    tl = op3nvoice.get_track_list(c, br['_links']['o3v:tracks']['href'])
+    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 
     print '*** Deleting all tracks...'
 
     # Update the track.
-    r = op3nvoice.delete_track(c, href)
+    r = op3nvoice.delete_track(href)
 
     # List the tracks.
-    tl = op3nvoice.get_track_list(c, br['_links']['o3v:tracks']['href'])
+    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 

@@ -20,9 +20,9 @@ def simple_search():
     """This function performs no setup, so we don't even check the
     results.  Just a basic sanity check."""
 
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
 
-    print op3nvoice.search(c, None, 'father')
+    print op3nvoice.search(None, 'father')
 
 
 def all(_ak=None):

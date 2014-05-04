@@ -8,6 +8,7 @@
 import sys
 sys.path.append('..')
 from op3nvoice_python_2 import op3nvoice
+from op3nvoice_python_2 import __api_version__
 
 ak = None # our app key.
 
@@ -17,12 +18,12 @@ def set_appkey(key):
     ak = key
 
 def process_exception():
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
 
     try:
-        bad_href = '/' + op3nvoice.API_VERSION + '/' + \
+        bad_href = '/' + __api_version__ + '/' + \
                    op3nvoice.BUNDLES_PATH + '/' + 'bozo'
-        op3nvoice.get_bundle(c, href=bad_href)
+        op3nvoice.get_bundle(href=bad_href)
     except op3nvoice.APIException, e:
         print '** Caught APIException'
         print 'code = ' + str(e.get_code())

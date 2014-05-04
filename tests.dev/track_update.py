@@ -19,38 +19,38 @@ def set_appkey(key):
     ak = key
 
 def track_update():
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
 
     print '*** Creating a bundle with no tracks...'
 
     # Create a bundle with no track.
-    br = op3nvoice.create_bundle(c, name='track tester')
+    br = op3nvoice.create_bundle(name='track tester')
     href = br['_links']['o3v:tracks']['href']
 
     # List the tracks.
-    tl = op3nvoice.get_track_list(c, br['_links']['o3v:tracks']['href'])
+    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 
     print '*** Adding a track to the bundle...'
 
     # Add a track.
-    r = op3nvoice.create_track(c, href,
+    r = op3nvoice.create_track(href,
                                media_url=MEDIA_URL1, label='first label')
                        
     # List the tracks.
-    tl = op3nvoice.get_track_list(c, br['_links']['o3v:tracks']['href'])
+    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 
     print '*** Changing the track...'
 
     # Update the track.
-    r = op3nvoice.update_track(c, href, track=0,
+    r = op3nvoice.update_track(href, track=0,
                                media_url=MEDIA_URL2, label='second label')
 
     # List the tracks.
-    tl = op3nvoice.get_track_list(c, br['_links']['o3v:tracks']['href'])
+    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 

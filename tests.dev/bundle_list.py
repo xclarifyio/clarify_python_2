@@ -17,9 +17,9 @@ def set_appkey(key):
     ak = key
 
 def get_first_page():
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
 
-    bl = op3nvoice.get_bundle_list(c)
+    bl = op3nvoice.get_bundle_list()
 
     print '** total: ' + str(bl['total'])
     print '** Bundle hrefs start'
@@ -34,18 +34,18 @@ def get_first_page():
     print '** last: ' + bl['_links']['last']['href']
 
 def get_all_bundle_hrefs():    
-    c = op3nvoice.Connection(ak)
-    common.bundle_list_map(print_href, c)
+    op3nvoice.set_key(ak)
+    common.bundle_list_map(print_href)
     
 def get_all_bundles():
-    c = op3nvoice.Connection(ak)
-    common.bundle_list_map(print_bundle, c)
+    op3nvoice.set_key(ak)
+    common.bundle_list_map(print_bundle)
 
-def print_href(connection, href):
+def print_href(href):
     print href
 
-def print_bundle(connection, href):
-    bundle = op3nvoice.get_bundle(connection, href)
+def print_bundle(href):
+    bundle = op3nvoice.get_bundle(href)
     print '** Bundle...'
     print 'id: ' + bundle['id']
     if bundle.has_key('name'):

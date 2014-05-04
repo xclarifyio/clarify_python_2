@@ -16,20 +16,20 @@ def set_appkey(key):
     ak = key
 
 def delete():
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
 
     # Create a bundle with some metadata.
     data = {'wife': 'Medea', 'husband': 'Jason'}
-    br = op3nvoice.create_bundle(c, name='metadata update test',
+    br = op3nvoice.create_bundle(name='metadata update test',
                                  metadata=data)
 
     # Retrieve the metadata and print it.
-    m = op3nvoice.get_metadata(c, br['_links']['o3v:metadata']['href'])
+    m = op3nvoice.get_metadata(br['_links']['o3v:metadata']['href'])
     print_metadata_info(m)
 
     # Delete the metadata and print it.
-    op3nvoice.delete_metadata(c, m['_links']['self']['href'])
-    m = op3nvoice.get_metadata(c, br['_links']['o3v:metadata']['href'])
+    op3nvoice.delete_metadata(m['_links']['self']['href'])
+    m = op3nvoice.get_metadata(br['_links']['o3v:metadata']['href'])
     print_metadata_info(m)
 
 def print_metadata_info(m):

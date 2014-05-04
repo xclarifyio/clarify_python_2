@@ -20,8 +20,10 @@ History
 
 * New repo name.
 
-0.9.0 (TBD)
-+++++++++++
+0.8.0 (2014-05-04)
+++++++++++++++++++
 
+* Simplified initialization (and removed threading restriction).
 * Separated REST cover and object libraries.
+* Moved configuration variables into module's __init__.py file.
 

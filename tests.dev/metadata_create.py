@@ -16,7 +16,7 @@ def set_appkey(key):
     ak = key
 
 def simple_create():
-    c = op3nvoice.Connection(ak)
+    op3nvoice.set_key(ak)
 
     # Create a bundle with metadata.
     # Note that all examples below are valid.
@@ -24,23 +24,22 @@ def simple_create():
     # data = {'wife': 'Medea', 'lovers': ['Aegisthus', 'Pancreon']}
     # data = {'daughters': 1, 'sons': 3}
     # data = {'hot': True, 'cold': False, 'tepid': None}
-    br = op3nvoice.create_bundle(connection=c, name='md test',
-                                  metadata=data)
+    br = op3nvoice.create_bundle(name='md test', metadata=data)
 
     ## 3 different ways to retrieve our metadata!
 
     # (1) Retrieve the metadata from bundle reference.  Print it.
     href = br['_links']['o3v:metadata']['href']
-    m = op3nvoice.get_metadata(c, href)
+    m = op3nvoice.get_metadata(href)
     print_metadata_info(m)
 
     # (2) Retrieve the bundle, then retrieve the metadata.  Print it.
-    b = op3nvoice.get_bundle(c, br['_links']['self']['href'])
-    m = op3nvoice.get_metadata(c, b['_links']['o3v:metadata']['href'])
+    b = op3nvoice.get_bundle(br['_links']['self']['href'])
+    m = op3nvoice.get_metadata(b['_links']['o3v:metadata']['href'])
     print_metadata_info(m)
 
     # (3) Retrieve the bundle with the metadata embedded.  Print it.
-    b = op3nvoice.get_bundle(c, br['_links']['self']['href'],
+    b = op3nvoice.get_bundle(br['_links']['self']['href'],
                              embed_metadata=True)
     m = b['_embedded']['o3v:metadata']
     print_metadata_info(m)
