@@ -67,7 +67,7 @@ Hint: You don't have to download these files. Instead you can pass us these urls
 Searching Audio
 ^^^^^^^^^^^^^^^
 
-To search, we'll use the search() function. If you uploaded the *Wizard of Oz* audio clip, you can search for "Dorothy":
+To search, we'll use the search() function. If you uploaded the *Wizard of Oz* audio clip, you can search for "dorothy":
 
 .. code-block:: python
 
@@ -93,7 +93,7 @@ Then you can process and interact the results however you wish. The code below s
 
     	    ++index
 	
-And here are the results using the _Wizard of Oz_ clip we loaded.
+And here are the results using the *Wizard of Oz* clip we loaded.
 
 ::
 
