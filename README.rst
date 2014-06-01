@@ -37,7 +37,7 @@ Configuring Your Environment
 
 While you can use any programming language you choose, we provide helping libraries in a few to get you started.  In Python, you simply include the OP3Nvoice file from the python_2 module, and initialize the environment with your API key:
 
-::
+.. code-block:: python
 
 	from op3nvoice_python_2 import op3nvoice
 
