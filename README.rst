@@ -48,7 +48,7 @@ Loading Audio
 
 Once you've initialied the environment with your API key, you load a file like this:
 
-::
+.. code-block:: python
 
 	op3nvoice.create_bundle(name='test bundle', media_url='http://example.com/sample-audio-file.wav')
 
@@ -56,7 +56,7 @@ Naming the bundle is optional.
 
 Here are some audio files you can use for testing:
 
-::
+.. code-block:: python
 
 	https://s3-us-west-2.amazonaws.com/op3nvoice/harvard-sentences-1.wav
 	https://s3-us-west-2.amazonaws.com/op3nvoice/harvard-sentences-2.wav
@@ -69,13 +69,13 @@ Searching Audio
 
 To search, we'll use the search() function. If you uploaded the _Wizard of Oz_ audio clip, you can search for "Dorothy":
 
-::
+.. code-block:: python
 
 	op3nvoice.search(query='dorothy')
 
 Then you can process and interact the results however you wish. The code below simply shows the resulting bundle id, bundle name, and the start/end offsets for each occurrence of the search terms. This assumes that the audio clip has been indexed by the time you search. If it hasn't, wait and try again in a few minutes.
 
-::
+.. code-block:: python
 
 	result = op3nvoice.search(query='dorothy')
 	results = result['item_results']
@@ -95,7 +95,7 @@ Then you can process and interact the results however you wish. The code below s
 	
 And here are the results using the _Wizard of Oz_ clip we loaded.
 
-::
+.. code-block:: python
 
 	dorothy and her friends
 	2.35 -- 2.59
@@ -110,7 +110,7 @@ Putting it all Together
 
 From here, we can visualize our search results with the included audio player.  The player should work with no additional configuration, but the bulk of the logic is here:
 
-::
+.. code-block:: python
 
 	import json
 
