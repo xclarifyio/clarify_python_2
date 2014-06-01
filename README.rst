@@ -56,7 +56,7 @@ Naming the bundle is optional.
 
 Here are some audio files you can use for testing:
 
-.. code-block:: python
+::
 
 	https://s3-us-west-2.amazonaws.com/op3nvoice/harvard-sentences-1.wav
 	https://s3-us-west-2.amazonaws.com/op3nvoice/harvard-sentences-2.wav
@@ -67,7 +67,7 @@ Hint: You don't have to download these files. Instead you can pass us these urls
 Searching Audio
 ^^^^^^^^^^^^^^^
 
-To search, we'll use the search() function. If you uploaded the _Wizard of Oz_ audio clip, you can search for "Dorothy":
+To search, we'll use the search() function. If you uploaded the *Wizard of Oz* audio clip, you can search for "Dorothy":
 
 .. code-block:: python
 
@@ -95,7 +95,7 @@ Then you can process and interact the results however you wish. The code below s
 	
 And here are the results using the _Wizard of Oz_ clip we loaded.
 
-.. code-block:: python
+::
 
 	dorothy and her friends
 	2.35 -- 2.59
