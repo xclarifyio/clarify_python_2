@@ -60,8 +60,6 @@ def print_track(track):
     if track.has_key('label'):
         print 'label: ' + track['label']
     print 'media_url: ' + track['media_url']
-    source = track['source']
-    print 'source: ' + source + '(NB: an empty source means generic.)'
     print 'created: ' + track['created']
     print 'updated: ' + track['updated']
     print 'status: ' + track['status']

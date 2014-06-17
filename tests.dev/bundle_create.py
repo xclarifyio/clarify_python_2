@@ -15,7 +15,7 @@ def set_appkey(key):
     global ak
     ak = key
 
-def create_26():
+def create_11():
     op3nvoice.set_key(ak)
     for i in range(0,11):
         br = op3nvoice.create_bundle(str(i))
@@ -27,7 +27,7 @@ def all(_ak=None):
     if _ak != None:
         set_appkey(_ak)
     
-    create_26()
+    create_11()
 
 if __name__ == '__main__':
 

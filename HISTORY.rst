@@ -27,3 +27,7 @@ History
 * Separated REST cover and object libraries.
 * Moved configuration variables into module's __init__.py file.
 
+0.9.0 (2014-06-16)
+++++++++++++++++++
+
+* Removed 'source' attribute from bundle.

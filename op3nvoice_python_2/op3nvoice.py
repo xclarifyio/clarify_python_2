@@ -428,7 +428,7 @@ def delete_metadata(href=None):
         raise APIException(raw_result.status, raw_result.json)
 
 def create_track(href=None, media_url=None, label=None,
-                 audio_channel=None, source=None):
+                 audio_channel=None):
     """Add a new track to a bundle.  Note that the total number of
     allowable tracks is limited. See the API documentation for details.
 
@@ -437,8 +437,6 @@ def create_track(href=None, media_url=None, label=None,
     'label' short name for the track. May be None.
     'audio_channel' the channel(s) to use in a stereo file. May be
     None. For details see the API documentation.
-    'source' the source of the recording. May be None. For details see
-    the API documentation.
 
     Returns a data structure equivalent to the JSON returned by the API.
     This data structure can be used to instantiate a Reference.
@@ -460,8 +458,6 @@ def create_track(href=None, media_url=None, label=None,
         fields['label'] = label
     if audio_channel != None:
         fields['audio_channel'] = audio_channel
-    if source != None:
-        fields['source'] = source
 
     if len(fields) > 0:
         data = fields
@@ -484,7 +480,7 @@ def create_track(href=None, media_url=None, label=None,
     return result
         
 def update_track(href=None, track=None, media_url=None, label=None,
-                 audio_channel=None, source=None, version=None):
+                 audio_channel=None, version=None):
     """Add a new track to a bundle.  Note that the total number of
     allowable tracks is limited. See the API documentation for details.
 
@@ -494,8 +490,6 @@ def update_track(href=None, track=None, media_url=None, label=None,
     'label' short name for the track. May be None.
     'audio_channel' the channel(s) to use in a stereo file. May be
     None. For details see the API documentation.
-    'source' the source of the recording. May be None. For details see
-    the API documentation.
     'version' the object version.  May be None; if not None, must be
     an integer, and the version must match the version of the bundle.  If
     not, a 409 conflict error will cause an APIException to be thrown.
@@ -523,8 +517,6 @@ def update_track(href=None, track=None, media_url=None, label=None,
         fields['label'] = label
     if audio_channel != None:
         fields['audio_channel'] = audio_channel
-    if source != None:
-        fields['source'] = source
     if version != None:
         fields['version'] = version
 
