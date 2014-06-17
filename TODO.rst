@@ -7,6 +7,8 @@ Structural
 
 * PIP packaging (https://github.com/audreyr/cookiecutter-pypackage)
 * Implement Scrutinizer
+* Look at https://github.com/thiagogalesi4e/op3nvoice_python_2/tree/dev 
+and consider OO implementation.
 
 Documentation
 -------------
