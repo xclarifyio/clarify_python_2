@@ -9,10 +9,9 @@ Python 2.x helper library for the OP3Nvoice API
 Installing
 ----------
 
-::
 .. code-block:: bash
 
-$ pip install https://github.com/OP3Nvoice/op3nvoice_python_2/archive/master.tar.gz
+   $ pip install https://github.com/OP3Nvoice/op3nvoice_python_2/archive/master.tar.gz
 
 You may need to use sudo if you don't have permission to install.
 
@@ -21,10 +20,9 @@ Upgrading
 
 If you are running an older version of the python helper library, please upgrade.
 
-::
 .. code-block:: bash
 
-$ pip install --upgrade https://github.com/OP3Nvoice/op3nvoice_python_2/archive/master.tar.gz
+   $ pip install --upgrade https://github.com/OP3Nvoice/op3nvoice_python_2/archive/master.tar.gz
 
 You may need to use sudo if you don't have permission to upgrade.
 
