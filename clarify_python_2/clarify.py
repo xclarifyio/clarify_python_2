@@ -163,7 +163,7 @@ def create_bundle(name=None, media_url=None, audio_channel=None,
     will take place before the API call.
 
     All other parameters are also optional. For information about these
-    see https://api-beta.op3nvoice.com/docs#!/audio/v1audio_post_1.
+    see https://api.clarify.io/docs#!/audio/v1audio_post_1.
 
     Returns a data structure equivalent to the JSON returned by the API.
     This data structure can be used to instantiate a BundleReference.
@@ -479,67 +479,6 @@ def create_track(href=None, media_url=None, label=None,
 
     return result
         
-def update_track(href=None, track=None, media_url=None, label=None,
-                 audio_channel=None, version=None):
-    """Add a new track to a bundle.  Note that the total number of
-    allowable tracks is limited. See the API documentation for details.
-
-    'href' the relative href to the tracks list. May not be None.
-    'track_index' the track to be updated. See API docs for default & limits.
-    'media_url' public URL to media file. May not be None.
-    'label' short name for the track. May be None.
-    'audio_channel' the channel(s) to use in a stereo file. May be
-    None. For details see the API documentation.
-    'version' the object version.  May be None; if not None, must be
-    an integer, and the version must match the version of the bundle.  If
-    not, a 409 conflict error will cause an APIException to be thrown.
-
-    Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Reference.
-
-    If the response status is not 2xx throws an APIException.  If the
-    JSON to python data struct conversion fails, throws an
-    APIDataException."""
-
-    # Argument error checking.
-    assert href != None
-    assert media_url != None
-    assert version == None or isinstance(version, int)
-
-    # Prepare the data we're going to include in our bundle update.
-    data = None
-
-    fields = {}
-    if track != None:
-        fields['track'] = track
-    fields['media_url'] = media_url
-    if label != None:
-        fields['label'] = label
-    if audio_channel != None:
-        fields['audio_channel'] = audio_channel
-    if version != None:
-        fields['version'] = version
-
-    if len(fields) > 0:
-        data = fields
-
-    raw_result = put(href, data)
-
-    if raw_result.status < 200 or raw_result.status > 202:
-        raise APIException(raw_result.status, raw_result.json)
-
-    # Convert the JSON to a python data struct.
-
-    result = None
-
-    try:
-        result = json.loads(raw_result.json)
-    except ValueError, e:
-        msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, raw_result.json, msg)
-
-    return result
-
 def get_track_list(href=None):
     """Get track list.
 

@@ -7,7 +7,7 @@
 
 import sys
 sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
+from clarify_python_2 import clarify
 
 ak = None # our app key.
 
@@ -19,38 +19,38 @@ def set_appkey(key):
     ak = key
 
 def track_update():
-    op3nvoice.set_key(ak)
+    clarify.set_key(ak)
 
     print '*** Creating a bundle with no tracks...'
 
     # Create a bundle with no track.
-    br = op3nvoice.create_bundle(name='track tester')
-    href = br['_links']['o3v:tracks']['href']
+    br = clarify.create_bundle(name='track tester')
+    href = br['_links']['clarify:tracks']['href']
 
     # List the tracks.
-    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
+    tl = clarify.get_track_list(br['_links']['clarify:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 
     print '*** Adding a track to the bundle...'
 
     # Add a track.
-    r = op3nvoice.create_track(href,
+    r = clarify.create_track(href,
                                media_url=MEDIA_URL1, label='first label')
                        
     # List the tracks.
-    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
+    tl = clarify.get_track_list(br['_links']['clarify:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 
     print '*** Changing the track...'
 
     # Update the track.
-    r = op3nvoice.update_track(href, track=0,
+    r = clarify.update_track(href, track=0,
                                media_url=MEDIA_URL2, label='second label')
 
     # List the tracks.
-    tl = op3nvoice.get_track_list(br['_links']['o3v:tracks']['href'])
+    tl = clarify.get_track_list(br['_links']['clarify:tracks']['href'])
     for i in tl['tracks']:
         print_track(i)
 

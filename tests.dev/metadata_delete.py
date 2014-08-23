@@ -7,7 +7,7 @@
 
 import sys
 sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
+from clarify_python_2 import clarify
 
 ak = None # our app key.
 
@@ -16,20 +16,20 @@ def set_appkey(key):
     ak = key
 
 def delete():
-    op3nvoice.set_key(ak)
+    clarify.set_key(ak)
 
     # Create a bundle with some metadata.
     data = {'wife': 'Medea', 'husband': 'Jason'}
-    br = op3nvoice.create_bundle(name='metadata update test',
+    br = clarify.create_bundle(name='metadata update test',
                                  metadata=data)
 
     # Retrieve the metadata and print it.
-    m = op3nvoice.get_metadata(br['_links']['o3v:metadata']['href'])
+    m = clarify.get_metadata(br['_links']['clarify:metadata']['href'])
     print_metadata_info(m)
 
     # Delete the metadata and print it.
-    op3nvoice.delete_metadata(m['_links']['self']['href'])
-    m = op3nvoice.get_metadata(br['_links']['o3v:metadata']['href'])
+    clarify.delete_metadata(m['_links']['self']['href'])
+    m = clarify.get_metadata(br['_links']['clarify:metadata']['href'])
     print_metadata_info(m)
 
 def print_metadata_info(m):

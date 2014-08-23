@@ -7,7 +7,7 @@
 
 import sys
 sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
+from clarify_python_2 import clarify
 
 ak = None # our app key.
 
@@ -16,11 +16,11 @@ def set_appkey(key):
     ak = key
 
 def create_11():
-    op3nvoice.set_key(ak)
+    clarify.set_key(ak)
     for i in range(0,11):
-        br = op3nvoice.create_bundle(str(i))
+        br = clarify.create_bundle(str(i))
         href = br['_links']['self']['href']
-        b = op3nvoice.get_bundle(href)
+        b = clarify.get_bundle(href)
         print 'Created bundle ' + href + ' with name: ' + b['name']
 
 def all(_ak=None):

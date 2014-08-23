@@ -7,7 +7,7 @@
 
 import sys
 sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
+from clarify_python_2 import clarify
 import common
 
 ak = None # our app key.
@@ -18,10 +18,10 @@ def set_appkey(key):
 
 def delete_bundle(href):
     print 'Deleting ' + href
-    op3nvoice.delete_bundle(href)
+    clarify.delete_bundle(href)
 
 def delete_all():
-    op3nvoice.set_key(ak)
+    clarify.set_key(ak)
     common.bundle_list_map(delete_bundle)
 
 def all(_ak=None):

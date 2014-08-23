@@ -7,7 +7,7 @@
 
 import sys
 sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
+from clarify_python_2 import clarify
 
 ak = None # our app key.
 
@@ -20,9 +20,9 @@ def simple_search():
     """This function performs no setup, so we don't even check the
     results.  Just a basic sanity check."""
 
-    op3nvoice.set_key(ak)
+    clarify.set_key(ak)
 
-    print op3nvoice.search(None, 'father')
+    print clarify.search(None, 'father')
 
 
 def all(_ak=None):

@@ -7,8 +7,8 @@
 
 import sys
 sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
-from op3nvoice_python_2 import __api_version__
+from clarify_python_2 import clarify
+from clarify_python_2 import __api_version__
 
 ak = None # our app key.
 
@@ -18,13 +18,13 @@ def set_appkey(key):
     ak = key
 
 def process_exception():
-    op3nvoice.set_key(ak)
+    clarify.set_key(ak)
 
     try:
         bad_href = '/' + __api_version__ + '/' + \
-                   op3nvoice.BUNDLES_PATH + '/' + 'bozo'
-        op3nvoice.get_bundle(href=bad_href)
-    except op3nvoice.APIException, e:
+                   clarify.BUNDLES_PATH + '/' + 'bozo'
+        clarify.get_bundle(href=bad_href)
+    except clarify.APIException, e:
         print '** Caught APIException'
         print 'code = ' + str(e.get_code())
         print 'status = ' + e.get_status()

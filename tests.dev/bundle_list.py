@@ -7,7 +7,7 @@
 
 import sys
 sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
+from clarify_python_2 import clarify
 import common
 
 ak = None # our app key.
@@ -17,9 +17,9 @@ def set_appkey(key):
     ak = key
 
 def get_first_page():
-    op3nvoice.set_key(ak)
+    clarify.set_key(ak)
 
-    bl = op3nvoice.get_bundle_list()
+    bl = clarify.get_bundle_list()
 
     print '** total: ' + str(bl['total'])
     print '** Bundle hrefs start'
@@ -34,18 +34,18 @@ def get_first_page():
     print '** last: ' + bl['_links']['last']['href']
 
 def get_all_bundle_hrefs():    
-    op3nvoice.set_key(ak)
+    clarify.set_key(ak)
     common.bundle_list_map(print_href)
     
 def get_all_bundles():
-    op3nvoice.set_key(ak)
+    clarify.set_key(ak)
     common.bundle_list_map(print_bundle)
 
 def print_href(href):
     print href
 
 def print_bundle(href):
-    bundle = op3nvoice.get_bundle(href)
+    bundle = clarify.get_bundle(href)
     print '** Bundle...'
     print 'id: ' + bundle['id']
     if bundle.has_key('name'):

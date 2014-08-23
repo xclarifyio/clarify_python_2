@@ -7,7 +7,7 @@
 
 import sys
 sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
+from clarify_python_2 import clarify
 import common
 
 ak = None # our app key.
@@ -17,22 +17,22 @@ def set_appkey(key):
     ak = key
 
 def update_all_names():  ## Will fail if no bundles available.
-    op3nvoice.set_key(ak)
+    clarify.set_key(ak)
     common.bundle_list_map(update_name)
     common.bundle_list_map(print_name)
         
 def update_name(href):
-    b = op3nvoice.get_bundle(href)
+    b = clarify.get_bundle(href)
     name = b.get('name')
     if name == None:
         name = 'no name updated'
     else:
         name = name + ' updated'
         print 'Updating name for ' + href
-    op3nvoice.update_bundle(href, name)
+    clarify.update_bundle(href, name)
 
 def print_name(href):
-    b = op3nvoice.get_bundle(href)
+    b = clarify.get_bundle(href)
     print href + ' is named ' + b['name']
     
 
