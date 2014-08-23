@@ -44,18 +44,24 @@ def track_create_and_list():
 
 def print_track(track):
 
-    print '** Track ' + str(track['track'])
-    if track.has_key('label'):
-        print 'label: ' + track['label']
+    print '** Track '
+    print 'id: ' + track['id']
+    print 'index: ' + str(track['track'])
+    print 'label: ' + track['label']
     print 'media_url: ' + track['media_url']
+    print 'audio_channel: ' + track['audio_channel']
+    print 'audio_language: ' + track['audio_language']
     print 'created: ' + track['created']
     print 'updated: ' + track['updated']
     print 'status: ' + track['status']
-    if track.has_key('mime_type'):
-        print 'mime_type: ' + track['mime_type']
-    print 'size: ' + str(track['size'])
+    print 'mime_type: ' + track['mime_type']
+    print 'media size: ' + str(track['media_size'])
     print 'duration: ' + str(track['duration'])
-
+    print 'fetch_response_code: ' + str(track['fetch_response_code'])
+    print 'fetch_response_message: ' + track['fetch_response_message']
+    print 'media_code: ' + str(track['media_code'])
+    print 'media_message: ' + track['media_message']
+              
 def all(_ak=None):
     if _ak != None:
         set_appkey(_ak)

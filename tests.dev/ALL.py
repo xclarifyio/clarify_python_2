@@ -14,7 +14,6 @@ import metadata_create
 import metadata_delete
 import metadata_update
 import track_create
-import track_update
 import track_delete
 import search
 import error
@@ -27,16 +26,15 @@ def set_appkey(key):
 
 def all(_ak=None):
     
-#    bundle_create.all(ak)
-#    bundle_update.all(ak)
+    bundle_create.all(ak)
+    bundle_update.all(ak)
     bundle_list.all(ak)
-#    bundle_delete.all(ak)
-#    metadata_create.all(ak)
-#    metadata_update.all(ak)
-#    metadata_delete.all(ak)
-#    track_create.all(ak)
-#    track_update.all(ak)
-#    track_delete.all(ak)
+    bundle_delete.all(ak)
+    metadata_create.all(ak)
+    metadata_update.all(ak)
+    metadata_delete.all(ak)
+    track_create.all(ak)
+    track_delete.all(ak)
     search.all(ak)
     error.all(ak)
 
