@@ -122,7 +122,7 @@ From here, we can visualize our search results with the included audio player.  
 
 	bundleref = result['_links']['items'][0]['href']
 	bundle = clarify.get_bundle(bundleref)
-	tracksref = bundle['_links']['o3v:tracks']['href']
+	tracksref = bundle['_links']['clarify:tracks']['href']
 	tracks = clarify.get_track_list(tracksref)['tracks']
 	mediaURL = tracks[0]['media_url']
 
