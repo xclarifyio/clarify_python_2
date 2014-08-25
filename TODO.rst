@@ -7,8 +7,6 @@ Structural
 
 * PIP packaging (https://github.com/audreyr/cookiecutter-pypackage)
 * Implement Scrutinizer
-* Look at https://github.com/thiagogalesi4e/op3nvoice_python_2/tree/dev 
-and consider OO implementation.
 
 Documentation
 -------------
@@ -18,6 +16,9 @@ Documentation
 Tests
 -----
 
+* Dev tests for metadata retrieval.
+* Dev tests for track retrieval.
+* Dev tests for track deletion (both styles).
 * Base function unit tests.
 
 Examples
