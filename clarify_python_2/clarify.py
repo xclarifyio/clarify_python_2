@@ -44,7 +44,6 @@ def get_bundle_list(href=None, limit=None, embed_items=None,
     API default or the values in the provided href.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a BundleList.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
@@ -53,6 +52,7 @@ def get_bundle_list(href=None, limit=None, embed_items=None,
     # Argument error checking.
     assert limit == None or limit > 0
 
+    j = None
     if href == None:
         j = _get_first_bundle_list(limit, embed_items, embed_tracks,
                                    embed_metadata)
@@ -166,7 +166,6 @@ def create_bundle(name=None, media_url=None, audio_channel=None,
     see https://api.clarify.io/docs#!/audio/v1audio_post_1.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a BundleReference.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
@@ -236,7 +235,6 @@ def get_bundle(href=None, embed_tracks=False, embed_metadata=False):
     information in the response.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Bundle.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
@@ -262,9 +260,6 @@ def get_bundle(href=None, embed_tracks=False, embed_metadata=False):
         raise APIException(raw_result.status, raw_result.json)
 
     # Convert the JSON to a python data struct.
-
-    result = None
-
     try:
         result = json.loads(raw_result.json)
     except ValueError, e:
@@ -285,7 +280,6 @@ def update_bundle(href=None, name=None, notify_url=None, version=None):
     not, a 409 conflict error will cause an APIException to be thrown.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Reference.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
@@ -330,10 +324,9 @@ def update_bundle(href=None, name=None, notify_url=None, version=None):
 def get_metadata(href=None):
     """Get metadata.
 
-    'href' the relative href to the bundle. May not be None.
+    'href' the relative href to the metadata. May not be None.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Metadata.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
@@ -372,7 +365,6 @@ def update_metadata(href=None, metadata=None, version=None):
     not, a 409 conflict error will cause an APIException to be thrown.
     
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Reference.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
@@ -439,7 +431,6 @@ def create_track(href=None, media_url=None, label=None,
     None. For details see the API documentation.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Reference.
 
     If the response status is not 2xx, or if the maximum number of
     tracks is exceeded, throws an APIException.  If the JSON to python
@@ -482,10 +473,9 @@ def create_track(href=None, media_url=None, label=None,
 def get_track_list(href=None):
     """Get track list.
 
-    'href' the relative href to the bundle. May not be None.
+    'href' the relative href to the track list. May not be None.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a TrackList.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
@@ -511,11 +501,42 @@ def get_track_list(href=None):
 
     return result
 
-def delete_track(href=None, track=None):
+def get_track(href=None):
+    """Get a track.
+
+    'href' the relative href to the track. May not be None.
+
+    Returns a data structure equivalent to the JSON returned by the API.
+
+    If the response status is not 2xx, throws an APIException.
+    If the JSON to python data struct conversion fails, throws an
+    APIDataException."""
+
+    # Argument error checking.
+    assert href != None
+
+    raw_result = get(href)
+
+    if raw_result.status < 200 or raw_result.status > 202:
+        raise APIException(raw_result.status, raw_result.json)
+
+    # Convert the JSON to a python data struct.
+
+    result = None
+
+    try:
+        result = json.loads(raw_result.json)
+    except ValueError, e:
+        msg = 'Unable to convert JSON string to python data structure.'
+        raise APIDataException(e, raw_result.json, msg)
+
+    return result
+
+def delete_track_at_index(href=None, index=None):
     """Delete a track, or all the tracks.
 
-    'href' the relative href to the bundle. May not be None.
-    'track' the index of the track to delete. If none is given,
+    'href' the relative href to the track list. May not be None.
+    'index' the index of the track to delete. If none is given,
     all tracks are deleted.
     
     Returns nothing.
@@ -529,13 +550,30 @@ def delete_track(href=None, track=None):
     data = None
 
     fields = {}
-    if track != None:
-        fields['track'] = track
+    if index != None:
+        fields['track'] = index
 
     if len(fields) > 0:
         data = fields
 
     raw_result = delete(href, data)
+
+    if raw_result.status != 204:
+        raise APIException(raw_result.status, raw_result.json)
+
+def delete_track(href=None):
+    """Delete a track.
+
+    'href' the relative index of the track. May not be none.
+
+    Returns nothing.
+
+    If the response status is not 204, throws and APIException."""
+
+    # Argument error checking.
+    assert href != None
+    
+    raw_result = delete(href)
 
     if raw_result.status != 204:
         raise APIException(raw_result.status, raw_result.json)
@@ -563,7 +601,6 @@ def search(href=None, query=None, query_field=None, filter=None,
     API default or the values in the provided href.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a SearchCollection.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
@@ -718,7 +755,7 @@ def get(path, data=None):
     connection.request('GET', fullpath, '', _get_headers())
     response = connection.getresponse()
 
-    # Extreact the result.
+    # Extract the result.
     s = response.status
     j = response.read()
 
@@ -865,12 +902,12 @@ class APIException(Exception):
         self.http_response = http_response
         self.json_response = json_response
 
-        # That that JSON and turn it into something we can use.
+        #  Try to turn the JSON and turn it into something we can use.
+        #  Could be garbage, in which case we should just ignore it.
         try:
             self._data_struct = json.loads(json_response)
         except ValueError, e:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(e, j, msg)
+            pass
 
     def get_http_response(self):
         """Return the HTTP response that caused this exception to be
@@ -879,20 +916,32 @@ class APIException(Exception):
         return self.http_response
 
     def get_status(self):
-        """Return the status embedded in the JSON error response body."""
+        """Return the status embedded in the JSON error response body,
+        or an empty string if the JSON couldn't be parsed."""
 
-        return self._data_struct[KEY_STATUS]
+        result = ''
+        if self._data_struct != None:
+            result = self._data_struct[KEY_STATUS]
+        return result
 
     def get_message(self):
-        """Return the message embedded in the JSON error response body."""
+        """Return the message embedded in the JSON error response body,
+        or an empty string if the JSON couldn't be parsed."""
 
-        return self._data_struct[KEY_MESSAGE]
+        result = ''
+        if self._data_struct != None:
+            result = self._data_struct[KEY_MESSAGE]
+        return result
 
     def get_code(self):
-        """Return the code embedded in the JSON error response body. This
-        should always match the 'http_response'"""
+        """Return the code embedded in the JSON error response body,
+        or an empty string if the JSON couldn't be parsed. This
+        should always match the 'http_response'."""
 
-        return self._data_struct[KEY_CODE]
+        result = ''
+        if self._data_struct != None:
+            result = self._data_struct[KEY_CODE]
+        return result
 
 class APIConfigurationException(Exception):
     """Thrown when the API isn't properly configured."""
