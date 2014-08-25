@@ -29,7 +29,7 @@ def track_create_and_list():
     # List the tracks.
     tl = clarify.get_track_list(br['_links']['clarify:tracks']['href'])
     for i in tl['tracks']:
-        print_track(i)
+        print_track_quiet(i)
 
     print '*** Adding a track to the bundle...'
 
@@ -40,7 +40,7 @@ def track_create_and_list():
     # List the tracks.
     tl = clarify.get_track_list(br['_links']['clarify:tracks']['href'])
     for i in tl['tracks']:
-        print_track(i)
+        print_track_quiet(i)
 
 def print_track(track):
 
@@ -61,11 +61,16 @@ def print_track(track):
     print 'fetch_response_message: ' + track['fetch_response_message']
     print 'media_code: ' + str(track['media_code'])
     print 'media_message: ' + track['media_message']
+
+def print_track_quiet(track):
+    print 'id/index/url: ' + track['id'] + ' / ' + str(track['track']) + \
+          ' / ' + track['media_url']
               
 def all(_ak=None):
     if _ak != None:
         set_appkey(_ak)
     
+    print '===== track_create_and_list() ====='
     track_create_and_list()
     
 if __name__ == '__main__':

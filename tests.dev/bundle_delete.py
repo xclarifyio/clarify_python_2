@@ -17,10 +17,10 @@ def set_appkey(key):
     ak = key
 
 def delete_bundle(href):
-    print 'Deleting ' + href
+    print '*** Deleting ' + href 
     clarify.delete_bundle(href)
 
-def delete_all():
+def delete_all_bundles():
     clarify.set_key(ak)
     common.bundle_list_map(delete_bundle)
 
@@ -28,7 +28,8 @@ def all(_ak=None):
     if _ak != None:
         set_appkey(_ak)
     
-    delete_all()
+    print '===== delete_all_bundles() ====='
+    delete_all_bundles()
 
 if __name__ == '__main__':
 

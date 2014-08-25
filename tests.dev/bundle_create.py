@@ -15,19 +15,20 @@ def set_appkey(key):
     global ak
     ak = key
 
-def create_11():
+def create_15_bundles():
     clarify.set_key(ak)
-    for i in range(0,11):
+    for i in range(0,15):
         br = clarify.create_bundle(str(i))
         href = br['_links']['self']['href']
         b = clarify.get_bundle(href)
-        print 'Created bundle ' + href + ' with name: ' + b['name']
+        print '*** Created bundle ' + href + ' with name: ' + b['name']
 
 def all(_ak=None):
     if _ak != None:
         set_appkey(_ak)
-    
-    create_11()
+
+    print '===== create_15_bundles() ====='
+    create_15_bundles()
 
 if __name__ == '__main__':
 

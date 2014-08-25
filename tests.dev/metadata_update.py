@@ -19,20 +19,26 @@ def create_and_update():
     clarify.set_key(ak)
 
     # Create a bundle with some metadata.
+    print '*** Creating a bundle with mythical metadata...'
     data = {'wife': 'Medea', 'husband': 'Jason'}
     br = clarify.create_bundle(name='metadata update test',
                                  metadata=data)
 
     # Retrieve the metadata and print it.
+    print '*** Retrieving metadata...'
     href = br['_links']['clarify:metadata']['href']
     m = clarify.get_metadata(href)
-    print_metadata_info(m)
+    print_metadata_info_quiet(m)
 
-    # Change the metadata and print it.
+    # Change the metadata 
+    print '*** Changing metadata...'
     data2 = {'wife': 'Clytemnestra', 'husband': ['Agamemnon', 'Aegisthus']}
     clarify.update_metadata(href, data2)
+
+    # Retrieve the metadata and print it.
+    print '*** Retrieving metadata...'
     m = clarify.get_metadata(href)
-    print_metadata_info(m)
+    print_metadata_info_quiet(m)
 
 def print_metadata_info(m):
     print '** Bundle info'
@@ -41,10 +47,15 @@ def print_metadata_info(m):
     if m.has_key('data'):
         print '* Data: ' + str(m['data'])
 
+def print_metadata_info_quiet(m):
+    if m.has_key('data'):
+        print str(m['data'])
+
 def all(_ak=None):
     if _ak != None:
         set_appkey(_ak)
     
+    print '===== create_and_update() ====='
     create_and_update()
 
 if __name__ == '__main__':

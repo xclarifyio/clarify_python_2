@@ -16,29 +16,26 @@ def set_appkey(key):
     global ak
     ak = key
 
-def get_first_page():
+def get_first_page_hrefs():
     clarify.set_key(ak)
 
     bl = clarify.get_bundle_list()
 
-    print '** total: ' + str(bl['total'])
-    print '** Bundle hrefs start'
+    print '*** Available bundles: ' + str(bl['total'])
+    print '*** Printing first page of hrefs retrieved (max 10)...'
     for i in bl['_links']['items']:
         print i['href']
-    print '** Bundle hrefs end'
-    if bl['_links'].has_key('next'):
-        print '** next: ' + bl['_links']['next']['href']
-    if bl['_links'].has_key('previous'):
-        print '** next: ' + bl['_links']['previous']['href']
-    print '** first: ' + bl['_links']['first']['href']
-    print '** last: ' + bl['_links']['last']['href']
 
 def get_all_bundle_hrefs():    
     clarify.set_key(ak)
+
+    print '*** Printing all available bundle hrefs...'
     common.bundle_list_map(print_href)
     
 def get_all_bundles():
     clarify.set_key(ak)
+
+    print '*** Printing all available bundle...'
     common.bundle_list_map(print_bundle)
 
 def print_href(href):
@@ -46,10 +43,13 @@ def print_href(href):
 
 def print_bundle(href):
     bundle = clarify.get_bundle(href)
-    print '** Bundle...'
-    print 'id: ' + bundle['id']
+    print '* Bundle ' + bundle['id'] + '...'
     if bundle.has_key('name'):
         print 'name: ' + bundle['name']
+    if bundle.has_key('external_id'):
+        print 'external_id: ' + bundle['external_id']
+    if bundle.has_key('notify_url'):
+        print 'notify_url: ' + bundle['notify_url']
     print 'created: ' + bundle['created']
     print 'updated: ' + bundle['updated']
 
@@ -57,8 +57,11 @@ def all(_ak=None):
     if _ak != None:
         set_appkey(_ak)
     
-    get_first_page()
+    print '===== get_first_page_hrefs() ====='
+    get_first_page_hrefs()
+    print '===== get_all_bundle_hrefs() ====='
     get_all_bundle_hrefs()
+    print '===== get_all_bundles() ====='
     get_all_bundles()
     
 if __name__ == '__main__':

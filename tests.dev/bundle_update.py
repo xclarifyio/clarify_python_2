@@ -16,7 +16,7 @@ def set_appkey(key):
     global ak
     ak = key
 
-def update_all_names():  ## Will fail if no bundles available.
+def update_all_bundle_names():  ## Will fail if no bundles available.
     clarify.set_key(ak)
     common.bundle_list_map(update_name)
     common.bundle_list_map(print_name)
@@ -28,19 +28,20 @@ def update_name(href):
         name = 'no name updated'
     else:
         name = name + ' updated'
-        print 'Updating name for ' + href
+        print '*** Updating name for ' + href
     clarify.update_bundle(href, name)
 
 def print_name(href):
     b = clarify.get_bundle(href)
-    print href + ' is named ' + b['name']
+    print '*** ' + href + ' is now named "' + b['name'] + '"'
     
 
 def all(_ak=None):
     if _ak != None:
         set_appkey(_ak)
     
-    update_all_names()
+    print '===== update_all_bundle_names() ====='
+    update_all_bundle_names()
 
 if __name__ == '__main__':
 

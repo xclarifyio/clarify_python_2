@@ -22,6 +22,7 @@ def simple_search():
 
     clarify.set_key(ak)
 
+    print '*** Searching for "father"...'
     print clarify.search(None, 'father')
 
 
@@ -29,6 +30,7 @@ def all(_ak=None):
     if _ak != None:
         set_appkey(_ak)
 
+    print '===== simple_search() ====='
     simple_search()
     
 if __name__ == '__main__':
