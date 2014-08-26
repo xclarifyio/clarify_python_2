@@ -1,48 +1,46 @@
 #!/usr/bin/python
 
-##
-##  Some test functions used to sanity check during development. Not
-##  unit tests.
-##
+"""
+Some test functions used to sanity check during development. Not
+unit tests.
+"""
 
 import sys
-sys.path.append('..')
+sys.path.insert(0, '..')
 from clarify_python_2 import clarify
-
-ak = None # our app key.
 
 MEDIA_URL1 = 'http://www.kqed.org/.stream/anon/radio/hd/2008/09/2008-09-18c-hd.mp3'
 MEDIA_URL2 = 'http://feedproxy.google.com/~r/kqed/ClimateWatch/~5/UTaeFBdvZSw/2012-05-04a-tcr.mp3'
 
-def set_appkey(key):
-    global ak
-    ak = key
 
 def track_create_and_list():
-    clarify.set_key(ak)
+    """Create a bundle with a track, print it, add a track, print them."""
 
     print '*** Creating a bundle with a track...'
 
     # Create a bundle with a track.
-    br = clarify.create_bundle(name='track tester', media_url=MEDIA_URL1)
+    bundle_ref = clarify.create_bundle(name='track tester',
+                                       media_url=MEDIA_URL1)
 
     # List the tracks.
-    tl = clarify.get_track_list(br['_links']['clarify:tracks']['href'])
-    for i in tl['tracks']:
-        print_track_quiet(i)
+    track_list_ref = bundle_ref['_links']['clarify:tracks']['href']
+    track_list = clarify.get_track_list(track_list_ref)
+    for track in track_list['tracks']:
+        print_track_quiet(track)
 
     print '*** Adding a track to the bundle...'
 
     # Add a track.
-    r = clarify.create_track(br['_links']['clarify:tracks']['href'],
-                               media_url=MEDIA_URL2)
-                       
+    clarify.create_track(track_list_ref, media_url=MEDIA_URL2)
+
     # List the tracks.
-    tl = clarify.get_track_list(br['_links']['clarify:tracks']['href'])
-    for i in tl['tracks']:
-        print_track_quiet(i)
+    track_list = clarify.get_track_list(track_list_ref)
+    for track in track_list['tracks']:
+        print_track_quiet(track)
+
 
 def print_track(track):
+    """Print a track."""
 
     print '** Track '
     print 'id: ' + track['id']
@@ -62,19 +60,26 @@ def print_track(track):
     print 'media_code: ' + str(track['media_code'])
     print 'media_message: ' + track['media_message']
 
+
 def print_track_quiet(track):
+    """Print condensed version of track."""
+
     print 'id/index/url: ' + track['id'] + ' / ' + str(track['track']) + \
           ' / ' + track['media_url']
-              
-def all(_ak=None):
-    if _ak != None:
-        set_appkey(_ak)
-    
+
+
+def all_tests(apikey):
+    """Set API key and call all test functions."""
+
+    clarify.set_key(apikey)
+
     print '===== track_create_and_list() ====='
     track_create_and_list()
-    
+
 if __name__ == '__main__':
 
-    set_appkey(sys.argv[1])
+    if len(sys.argv) < 2:
+        print 'Usage: ' + sys.argv[0] + ' <apikey>'
+        exit(1)
 
-    all()
+    all_tests(sys.argv[1])

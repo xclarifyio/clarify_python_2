@@ -1,50 +1,56 @@
 #!/usr/bin/python
 
-##
-##  Some test functions used to sanity check during development. Not
-##  unit tests.
-##
+"""
+Some test functions used to sanity check during development. Not
+unit tests.
+"""
 
 import sys
-sys.path.append('..')
+sys.path.insert(0, '..')
 from clarify_python_2 import clarify
 import common
 
-ak = None # our app key.
 
-def set_appkey(key):
-    global ak
-    ak = key
+def update_all_bundle_names():
+    """Update and print all the bundle names.
+    Will fail if no bundles are available!"""
 
-def update_all_bundle_names():  ## Will fail if no bundles available.
-    clarify.set_key(ak)
     common.bundle_list_map(update_name)
     common.bundle_list_map(print_name)
-        
+
+
 def update_name(href):
-    b = clarify.get_bundle(href)
-    name = b.get('name')
-    if name == None:
+    """Update the name of the bundle at href."""
+
+    bundle = clarify.get_bundle(href)
+    name = bundle.get('name')
+    if name is None:
         name = 'no name updated'
     else:
         name = name + ' updated'
         print '*** Updating name for ' + href
     clarify.update_bundle(href, name)
 
-def print_name(href):
-    b = clarify.get_bundle(href)
-    print '*** ' + href + ' is now named "' + b['name'] + '"'
-    
 
-def all(_ak=None):
-    if _ak != None:
-        set_appkey(_ak)
-    
+def print_name(href):
+    """Print the name of the bundle at href."""
+
+    bundle = clarify.get_bundle(href)
+    print '*** ' + href + ' is now named "' + bundle['name'] + '"'
+
+
+def all_tests(apikey):
+    """Set API key and call all test functions."""
+
+    clarify.set_key(apikey)
+
     print '===== update_all_bundle_names() ====='
     update_all_bundle_names()
 
 if __name__ == '__main__':
 
-    set_appkey(sys.argv[1])
-    
-    all()
+    if len(sys.argv) < 2:
+        print 'Usage: ' + sys.argv[0] + ' <apikey>'
+        exit(1)
+
+    all_tests(sys.argv[1])

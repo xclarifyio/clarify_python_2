@@ -1,30 +1,24 @@
+""" Sample test file. """
+
 import os
-import o3v_connection
-import o3v_audio
+from clarify_python_2 import clarify
 
-connection = None
+KEY_SET = False
 
-def get_connection():
 
-    global connection
+def set_key():
+    """NB: This should really be an initialization function."""
 
-    if connection == None:
+    global KEY_SET
+
+    if KEY_SET is False:
         api_key = os.environ['API_KEY']
-        connection = o3v_connection.Connection(api_key)
+        clarify.set_key(api_key)
+        KEY_SET = True
 
-    return connection
 
 def test_bundle_list():
+    """Make sure we can get a list of bundles."""
 
-    conn = get_connection()
-    bl = o3v_audio.get_bundle_list(conn)
-
-    assert bl != None
-
-
-# def test_func_succeed():
-#     assert func(3) == 4
-
-# def test_func_fail():
-#     assert func(3) == 5
-    
+    set_key()
+    assert clarify.get_bundle_list() is not None
