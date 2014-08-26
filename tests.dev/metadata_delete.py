@@ -1,52 +1,68 @@
 #!/usr/bin/python
 
-##
-##  Some test functions used to sanity check during development. Not
-##  unit tests.
-##
+"""
+Some test functions used to sanity check during development. Not
+unit tests.
+"""
 
 import sys
-sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
+sys.path.insert(0, '..')
+from clarify_python_2 import clarify
 
-ak = None # our app key.
-
-def set_appkey(key):
-    global ak
-    ak = key
-
-def delete():
-    op3nvoice.set_key(ak)
+def metadata_delete():
+    """Create a bundle with metadata, print it, delete it, print it."""
 
     # Create a bundle with some metadata.
+    print '*** Creating a bundle with mythical metadata...'
     data = {'wife': 'Medea', 'husband': 'Jason'}
-    br = op3nvoice.create_bundle(name='metadata update test',
-                                 metadata=data)
+    bundle_ref = clarify.create_bundle(name='metadata update test',
+                                       metadata=data)
 
     # Retrieve the metadata and print it.
-    m = op3nvoice.get_metadata(br['_links']['o3v:metadata']['href'])
-    print_metadata_info(m)
+    print '*** Retrieving metadata...'
+    metadata_href = bundle_ref['_links']['clarify:metadata']['href']
+    metadata = clarify.get_metadata(metadata_href)
+    print_metadata_info_quiet(metadata)
 
     # Delete the metadata and print it.
-    op3nvoice.delete_metadata(m['_links']['self']['href'])
-    m = op3nvoice.get_metadata(br['_links']['o3v:metadata']['href'])
-    print_metadata_info(m)
+    print '*** Deleting metadata...'
+    clarify.delete_metadata(metadata['_links']['self']['href'])
 
-def print_metadata_info(m):
-    print '** Bundle info'
-    print '* Created: ' + m['created']
-    print '* Updated: ' + m['updated']
-    if m.has_key('data'):
-        print '* Data: ' + str(m['data'])
+    # Retrieve the metadata and print it.
+    print '*** Retrieving metadata...'
+    metadata = clarify.get_metadata(metadata_href)
+    print_metadata_info_quiet(metadata)
 
-def all(_ak=None):
-    if _ak != None:
-        set_appkey(_ak)
-    
-    delete()
+
+def print_metadata_info(metadata):
+    """Print metadata."""
+
+    print '** Metadata info'
+    print '* Created: ' + metadata['created']
+    print '* Updated: ' + metadata['updated']
+    if 'data' in metadata:
+        print '* Data: ' + str(metadata['data'])
+
+
+def print_metadata_info_quiet(metadata):
+    """Print condensed version of metadata."""
+
+    if 'data' in metadata:
+        print str(metadata['data'])
+
+
+def all_tests(apikey):
+    """Set API key and call all test functions."""
+
+    clarify.set_key(apikey)
+
+    print '===== metadata_delete() ====='
+    metadata_delete()
 
 if __name__ == '__main__':
 
-    set_appkey(sys.argv[1])
-    
-    all()
+    if len(sys.argv) < 2:
+        print 'Usage: ' + sys.argv[0] + ' <apikey>'
+        exit(1)
+
+    all_tests(sys.argv[1])

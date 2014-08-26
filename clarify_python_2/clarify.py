@@ -1,8 +1,10 @@
-##
-##  This file contains all of the functions covering the REST API calls.
-##  These calls (except for delete_* which are void) all return a python
-##  data structure equivalent to the JSON returned by the API.
-##
+"""
+clarify.py
+
+All of the functions covering the REST API calls.
+These calls (except for delete_* which are void) all return a python
+data structure equivalent to the JSON returned by the API.
+"""
 
 import sys
 import urllib
@@ -10,21 +12,20 @@ import httplib
 import collections
 import json
 import urlparse
-from __init__ import __version__
-from __init__ import __api_version__
-from __init__ import __api_lib_name__
-from __init__ import __host__
-from __init__ import __debug_level__
+from clarify_python_2 import __version__
+from clarify_python_2 import __api_version__
+from clarify_python_2 import __api_lib_name__
+from clarify_python_2 import __host__
+from clarify_python_2 import __debug_level__
 
 BUNDLES_PATH = 'bundles'
 SEARCH_PATH = 'search'
-PYTHON_VERSION = '.'.join(map(str, sys.version_info[:3]))
+PYTHON_VERSION = '.'.join(str(i) for i in sys.version_info[:3])
 
-_key = None
+KEY = None
 
-###
-###  The API functions.
-###
+# The API functions.
+
 
 def get_bundle_list(href=None, limit=None, embed_items=None,
                     embed_tracks=None, embed_metadata=None):
@@ -32,8 +33,7 @@ def get_bundle_list(href=None, limit=None, embed_items=None,
 
     'href' the relative href to the bundle list to retriev. If None, the
     first bundle list will be returned.
-    'limit' the maximum number of bundles to include in the
-    result. 
+    'limit' the maximum number of bundles to include in the result.
     'embed_items' whether or not to expand the bundle data into the result.
     'embed_tracks' whether or not to expand the bundle track data into
     the result.
@@ -44,16 +44,16 @@ def get_bundle_list(href=None, limit=None, embed_items=None,
     API default or the values in the provided href.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a BundleList.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
     APIDataException."""
 
     # Argument error checking.
-    assert limit == None or limit > 0
+    assert limit is None or limit > 0
 
-    if href == None:
+    j = None
+    if href is None:
         j = _get_first_bundle_list(limit, embed_items, embed_tracks,
                                    embed_metadata)
     else:
@@ -66,11 +66,12 @@ def get_bundle_list(href=None, limit=None, embed_items=None,
 
     try:
         result = json.loads(j)
-    except ValueError, e:
+    except ValueError, exception:
         msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, j, msg)
+        raise APIDataException(exception, j, msg)
 
     return result
+
 
 def _get_first_bundle_list(limit=None, embed_items=None,
                            embed_tracks=None, embed_metadata=None):
@@ -82,28 +83,28 @@ def _get_first_bundle_list(limit=None, embed_items=None,
     'embed_metadata' True will embed metadata in the embeded items.
 
     Note that including tracks and metadata without including items is
-    meaningless.  
-    
+    meaningless.
+
     Returns the raw JSON returned by the API.
 
     If the response status is not 2xx, throws an APIException."""
 
     # Prepare the data we're going to include in our query.
     path = '/' + __api_version__ + '/' + BUNDLES_PATH
-    
+
     data = None
     fields = {}
-    if limit != None:
+    if limit is not None:
         fields['limit'] = limit
     embed = process_embed(embed_items=embed_items,
                           embed_tracks=embed_tracks,
                           embed_metadata=embed_metadata)
-    if embed != None:
+    if embed is not None:
         fields['embed'] = embed
 
     if len(fields) > 0:
         data = fields
-    
+
     raw_result = get(path, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
@@ -112,6 +113,7 @@ def _get_first_bundle_list(limit=None, embed_items=None,
         result = raw_result.json
 
     return result
+
 
 def _get_additional_bundle_list(href=None, limit=None, embed_items=None,
                                 embed_tracks=None, embed_metadata=None):
@@ -130,18 +132,18 @@ def _get_additional_bundle_list(href=None, limit=None, embed_items=None,
     data = urlparse.parse_qs(url_components.query)
 
     # Deal with limit overriding.
-    if limit != None:
+    if limit is not None:
         data['limit'] = limit
 
     # Deal with embeds overriding.
     href_embed = None
-    if data.has_key('embed'):
-        href_embed = data['embed'][0] # parse_qs puts values in a list.
+    if 'embed' in data:
+        href_embed = data['embed'][0]  # parse_qs puts values in a list.
     final_embed = process_embed_override(href_embed,
                                          embed_items,
                                          embed_tracks,
                                          embed_metadata)
-    if final_embed != None:
+    if final_embed is not None:
         data['embed'] = final_embed
 
     raw_result = get(path, data)
@@ -153,20 +155,19 @@ def _get_additional_bundle_list(href=None, limit=None, embed_items=None,
 
     return result
 
+
 def create_bundle(name=None, media_url=None, audio_channel=None,
                   metadata=None, notify_url=None):
-                  
-    """Create a new bundle. 
+    """Create a new bundle.
 
     'metadata' may be None, or an object that can be converted to a JSON
     string.  See API documentation for restrictions.  The conversion
     will take place before the API call.
 
     All other parameters are also optional. For information about these
-    see https://api-beta.op3nvoice.com/docs#!/audio/v1audio_post_1.
+    see https://api.clarify.io/docs#!/audio/v1audio_post_1.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a BundleReference.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
@@ -178,17 +179,17 @@ def create_bundle(name=None, media_url=None, audio_channel=None,
     data = None
 
     fields = {}
-    if name != None:
+    if name is not None:
         fields['name'] = name
-    if media_url != None:
+    if media_url is not None:
         fields['media_url'] = media_url
-    if audio_channel != None:
+    if audio_channel is not None:
         fields['audio_channel'] = audio_channel
-    if metadata != None:
+    if metadata is not None:
         fields['metadata'] = json.dumps(metadata)
-    if notify_url != None:
+    if notify_url is not None:
         fields['notify_url'] = notify_url
-        
+
     if len(fields) > 0:
         data = fields
 
@@ -203,12 +204,13 @@ def create_bundle(name=None, media_url=None, audio_channel=None,
 
     try:
         result = json.loads(raw_result.json)
-    except ValueError, e:
+    except ValueError, exception:
         msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, raw_result.json, msg)
+        raise APIDataException(exception, raw_result.json, msg)
 
     return result
-    
+
+
 def delete_bundle(href=None):
     """Delete a bundle.
 
@@ -219,12 +221,13 @@ def delete_bundle(href=None):
     If the response status is not 204, throws an APIException."""
 
     # Argument error checking.
-    assert href != None
+    assert href is not None
 
     raw_result = delete(href)
 
     if raw_result.status != 204:
         raise APIException(raw_result.status, raw_result.json)
+
 
 def get_bundle(href=None, embed_tracks=False, embed_metadata=False):
     """Get a bundle.
@@ -236,21 +239,20 @@ def get_bundle(href=None, embed_tracks=False, embed_metadata=False):
     information in the response.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Bundle.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
     APIDataException."""
 
     # Argument error checking.
-    assert href != None
+    assert href is not None
 
     data = None
     fields = {}
     embed = process_embed(embed_items=False,
                           embed_tracks=embed_tracks,
                           embed_metadata=embed_metadata)
-    if embed != None:
+    if embed is not None:
         fields['embed'] = embed
 
     if len(fields) > 0:
@@ -262,16 +264,14 @@ def get_bundle(href=None, embed_tracks=False, embed_metadata=False):
         raise APIException(raw_result.status, raw_result.json)
 
     # Convert the JSON to a python data struct.
-
-    result = None
-
     try:
         result = json.loads(raw_result.json)
-    except ValueError, e:
+    except ValueError, exception:
         msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, raw_result.json, msg)
+        raise APIDataException(exception, raw_result.json, msg)
 
     return result
+
 
 def update_bundle(href=None, name=None, notify_url=None, version=None):
     """Update a bundle.  Note that only the 'name' and 'notify_url' can
@@ -285,26 +285,24 @@ def update_bundle(href=None, name=None, notify_url=None, version=None):
     not, a 409 conflict error will cause an APIException to be thrown.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Reference.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
     APIDataException."""
 
-    
     # Argument error checking.
-    assert href != None
-    assert version == None or isinstance(version, int)
+    assert href is not None
+    assert version is None or isinstance(version, int)
 
     # Prepare the data we're going to include in our bundle update.
     data = None
 
     fields = {}
-    if name != None:
+    if name is not None:
         fields['name'] = name
-    if notify_url != None:
+    if notify_url is not None:
         fields['notify_url'] = notify_url
-    if version != None:
+    if version is not None:
         fields['version'] = version
 
     if len(fields) > 0:
@@ -321,26 +319,26 @@ def update_bundle(href=None, name=None, notify_url=None, version=None):
 
     try:
         result = json.loads(raw_result.json)
-    except ValueError, e:
+    except ValueError, exception:
         msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, raw_result.json, msg)
+        raise APIDataException(exception, raw_result.json, msg)
 
     return result
+
 
 def get_metadata(href=None):
     """Get metadata.
 
-    'href' the relative href to the bundle. May not be None.
+    'href' the relative href to the metadata. May not be None.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Metadata.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
     APIDataException."""
-    
+
     # Argument error checking.
-    assert href != None
+    assert href is not None
 
     raw_result = get(href)
 
@@ -353,11 +351,12 @@ def get_metadata(href=None):
 
     try:
         result = json.loads(raw_result.json)
-    except ValueError, e:
+    except ValueError, exception:
         msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, raw_result.json, msg)
+        raise APIDataException(exception, raw_result.json, msg)
 
     return result
+
 
 def update_metadata(href=None, metadata=None, version=None):
     """Update the metadata in a bundle.
@@ -370,28 +369,27 @@ def update_metadata(href=None, metadata=None, version=None):
     'version' the object version.  May be None; if not None, must be
     an integer, and the version must match the version of the bundle.  If
     not, a 409 conflict error will cause an APIException to be thrown.
-    
+
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Reference.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
     APIDataException."""
 
     # Argument error checking.
-    assert href != None
-    assert metadata != None
-    assert version == None or isinstance(version, int)
-    
+    assert href is not None
+    assert metadata is not None
+    assert version is None or isinstance(version, int)
+
     # Prepare the data we're going to include in our bundle update.
     data = None
 
     fields = {}
-    if version != None:
+    if version is not None:
         fields['version'] = version
     fields['data'] = json.dumps(metadata)
 
-    data = fields 
+    data = fields
 
     raw_result = put(href, data)
 
@@ -404,12 +402,13 @@ def update_metadata(href=None, metadata=None, version=None):
 
     try:
         result = json.loads(raw_result.json)
-    except ValueError, e:
+    except ValueError, exception:
         msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, raw_result.json, msg)
+        raise APIDataException(exception, raw_result.json, msg)
 
     return result
-    
+
+
 def delete_metadata(href=None):
     """Delete metadata.
 
@@ -420,12 +419,13 @@ def delete_metadata(href=None):
     If the response status is not 204, throws an APIException."""
 
     # Argument error checking.
-    assert href != None
+    assert href is not None
 
     raw_result = delete(href)
 
     if raw_result.status != 204:
         raise APIException(raw_result.status, raw_result.json)
+
 
 def create_track(href=None, media_url=None, label=None,
                  audio_channel=None):
@@ -439,24 +439,23 @@ def create_track(href=None, media_url=None, label=None,
     None. For details see the API documentation.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Reference.
 
     If the response status is not 2xx, or if the maximum number of
     tracks is exceeded, throws an APIException.  If the JSON to python
     data struct conversion fails, throws an APIDataException."""
 
     # Argument error checking.
-    assert href != None
-    assert media_url != None
+    assert href is not None
+    assert media_url is not None
 
     # Prepare the data we're going to write.
     data = None
 
     fields = {}
     fields['media_url'] = media_url
-    if label != None:
+    if label is not None:
         fields['label'] = label
-    if audio_channel != None:
+    if audio_channel is not None:
         fields['audio_channel'] = audio_channel
 
     if len(fields) > 0:
@@ -473,87 +472,26 @@ def create_track(href=None, media_url=None, label=None,
 
     try:
         result = json.loads(raw_result.json)
-    except ValueError, e:
+    except ValueError, exception:
         msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, raw_result.json, msg)
+        raise APIDataException(exception, raw_result.json, msg)
 
     return result
-        
-def update_track(href=None, track=None, media_url=None, label=None,
-                 audio_channel=None, version=None):
-    """Add a new track to a bundle.  Note that the total number of
-    allowable tracks is limited. See the API documentation for details.
 
-    'href' the relative href to the tracks list. May not be None.
-    'track_index' the track to be updated. See API docs for default & limits.
-    'media_url' public URL to media file. May not be None.
-    'label' short name for the track. May be None.
-    'audio_channel' the channel(s) to use in a stereo file. May be
-    None. For details see the API documentation.
-    'version' the object version.  May be None; if not None, must be
-    an integer, and the version must match the version of the bundle.  If
-    not, a 409 conflict error will cause an APIException to be thrown.
-
-    Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a Reference.
-
-    If the response status is not 2xx throws an APIException.  If the
-    JSON to python data struct conversion fails, throws an
-    APIDataException."""
-
-    # Argument error checking.
-    assert href != None
-    assert media_url != None
-    assert version == None or isinstance(version, int)
-
-    # Prepare the data we're going to include in our bundle update.
-    data = None
-
-    fields = {}
-    if track != None:
-        fields['track'] = track
-    fields['media_url'] = media_url
-    if label != None:
-        fields['label'] = label
-    if audio_channel != None:
-        fields['audio_channel'] = audio_channel
-    if version != None:
-        fields['version'] = version
-
-    if len(fields) > 0:
-        data = fields
-
-    raw_result = put(href, data)
-
-    if raw_result.status < 200 or raw_result.status > 202:
-        raise APIException(raw_result.status, raw_result.json)
-
-    # Convert the JSON to a python data struct.
-
-    result = None
-
-    try:
-        result = json.loads(raw_result.json)
-    except ValueError, e:
-        msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, raw_result.json, msg)
-
-    return result
 
 def get_track_list(href=None):
     """Get track list.
 
-    'href' the relative href to the bundle. May not be None.
+    'href' the relative href to the track list. May not be None.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a TrackList.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
     APIDataException."""
 
     # Argument error checking.
-    assert href != None
+    assert href is not None
 
     raw_result = get(href)
 
@@ -566,32 +504,65 @@ def get_track_list(href=None):
 
     try:
         result = json.loads(raw_result.json)
-    except ValueError, e:
+    except ValueError, exception:
         msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, raw_result.json, msg)
+        raise APIDataException(exception, raw_result.json, msg)
 
     return result
 
-def delete_track(href=None, track=None):
+
+def get_track(href=None):
+    """Get a track.
+
+    'href' the relative href to the track. May not be None.
+
+    Returns a data structure equivalent to the JSON returned by the API.
+
+    If the response status is not 2xx, throws an APIException.
+    If the JSON to python data struct conversion fails, throws an
+    APIDataException."""
+
+    # Argument error checking.
+    assert href is not None
+
+    raw_result = get(href)
+
+    if raw_result.status < 200 or raw_result.status > 202:
+        raise APIException(raw_result.status, raw_result.json)
+
+    # Convert the JSON to a python data struct.
+
+    result = None
+
+    try:
+        result = json.loads(raw_result.json)
+    except ValueError, exception:
+        msg = 'Unable to convert JSON string to python data structure.'
+        raise APIDataException(exception, raw_result.json, msg)
+
+    return result
+
+
+def delete_track_at_index(href=None, index=None):
     """Delete a track, or all the tracks.
 
-    'href' the relative href to the bundle. May not be None.
-    'track' the index of the track to delete. If none is given,
+    'href' the relative href to the track list. May not be None.
+    'index' the index of the track to delete. If none is given,
     all tracks are deleted.
-    
+
     Returns nothing.
 
     If the response status is not 204, throws an APIException."""
 
     # Argument error checking.
-    assert href != None
+    assert href is not None
 
     # Deal with any parameters that need to be passed in.
     data = None
 
     fields = {}
-    if track != None:
-        fields['track'] = track
+    if index is not None:
+        fields['track'] = index
 
     if len(fields) > 0:
         data = fields
@@ -601,19 +572,37 @@ def delete_track(href=None, track=None):
     if raw_result.status != 204:
         raise APIException(raw_result.status, raw_result.json)
 
-def search(href=None, query=None, query_field=None, filter=None,
+
+def delete_track(href=None):
+    """Delete a track.
+
+    'href' the relative index of the track. May not be none.
+
+    Returns nothing.
+
+    If the response status is not 204, throws and APIException."""
+
+    # Argument error checking.
+    assert href is not None
+
+    raw_result = delete(href)
+
+    if raw_result.status != 204:
+        raise APIException(raw_result.status, raw_result.json)
+
+
+def search(href=None, query=None, query_field=None, query_filter=None,
            limit=None, embed_items=None, embed_tracks=None,
            embed_metadata=None):
-           
+
     """Search a media collection.
 
     'href' the relative href to the bundle list to retriev. If None, the
     first bundle list will be returned.
     'query' See API docs for full description. May not be None.
     'query_field' See API docs for full description. May be None.
-    'filter' See API docs for full description. May be None.
-    'limit' the maximum number of bundles to include in the
-    result. 
+    'query_filter' See API docs for full description. May be None.
+    'limit' the maximum number of bundles to include in the result.
     'embed_items' whether or not to expand the bundle data into the result.
     'embed_tracks' whether or not to expand the bundle track data into
     the result.
@@ -624,24 +613,20 @@ def search(href=None, query=None, query_field=None, filter=None,
     API default or the values in the provided href.
 
     Returns a data structure equivalent to the JSON returned by the API.
-    This data structure can be used to instantiate a SearchCollection.
 
     If the response status is not 2xx, throws an APIException.
     If the JSON to python data struct conversion fails, throws an
     APIDataException."""
 
     # Argument error checking.
-    assert query != None
-    assert limit == None or limit > 0
-    
-    if href == None:
-        j = _search_p1(query, query_field, filter, limit, embed_items,
+    assert query is not None
+    assert limit is None or limit > 0
+
+    if href is None:
+        j = _search_p1(query, query_field, query_filter, limit, embed_items,
                        embed_tracks, embed_metadata)
-                                   
     else:
-        j = _search_pn(href, query, query_field, filter, limit,
-                       embed_items, embed_tracks, embed_metadata)
-                                        
+        j = _search_pn(href, limit, embed_items, embed_tracks, embed_metadata)
 
     # Convert the JSON to a python data struct.
 
@@ -649,36 +634,39 @@ def search(href=None, query=None, query_field=None, filter=None,
 
     try:
         result = json.loads(j)
-    except ValueError, e:
+    except ValueError, exception:
         msg = 'Unable to convert JSON string to python data structure.'
-        raise APIDataException(e, j, msg)
+        raise APIDataException(exception, j, msg)
 
     return result
 
-def _search_p1(query=None, query_field=None, filter=None, limit=None,
+
+def _search_p1(query=None, query_field=None, query_filter=None, limit=None,
                embed_items=None, embed_tracks=None,
                embed_metadata=None):
+    """Function called to retrieve the first page."""
+
     # Prepare the data we're going to include in our query.
     path = '/' + __api_version__ + '/' + SEARCH_PATH
-    
+
     data = None
     fields = {}
     fields['query'] = query
-    if query_field != None:
+    if query_field is not None:
         fields['query_field'] = query_field
-    if filter != None:
-        fields['filter'] = filter
-    if limit != None:
+    if query_filter is not None:
+        fields['filter'] = query_filter
+    if limit is not None:
         fields['limit'] = limit
     embed = process_embed(embed_items=embed_items,
                           embed_tracks=embed_tracks,
                           embed_metadata=embed_metadata)
-    if embed != None:
+    if embed is not None:
         fields['embed'] = embed
 
     if len(fields) > 0:
         data = fields
-    
+
     raw_result = get(path, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
@@ -688,27 +676,28 @@ def _search_p1(query=None, query_field=None, filter=None, limit=None,
 
     return result
 
-def _search_pn(href=None, query=None, query_field=None, filter=None,
-               limit=None, embed_items=None, embed_tracks=None,
-               embed_metadata=None):
+
+def _search_pn(href=None, limit=None,
+               embed_items=None, embed_tracks=None, embed_metadata=None):
+    """Function called to retrieve pages 2-n."""
+
     url_components = urlparse.urlparse(href)
     path = url_components.path
     data = urlparse.parse_qs(url_components.query)
 
-
     # Deal with limit overriding.
-    if limit != None:
+    if limit is not None:
         data['limit'] = limit
 
     # Deal with embeds overriding.
     href_embed = None
-    if data.has_key('embed'):
-        href_embed = data['embed'][0] # parse_qs puts values in a list.
+    if 'embed' in data:
+        href_embed = data['embed'][0]  # parse_qs puts values in a list.
     final_embed = process_embed_override(href_embed,
                                          embed_items,
                                          embed_tracks,
                                          embed_metadata)
-    if final_embed != None:
+    if final_embed is not None:
         data['embed'] = final_embed
 
     raw_result = get(path, data)
@@ -720,35 +709,43 @@ def _search_pn(href=None, query=None, query_field=None, filter=None,
 
     return result
 
-###
-### Functions to set the API key and perform basic HTTP operations.
-###
+#
+# Functions to set the API key and perform basic HTTP operations.
+#
 
 
 # This named tuple is returned by get(), put(), post(), delete()
 # functions and consumed by the REST cover functions.
 Result = collections.namedtuple('Result', ['status', 'json'])
 
+
 def set_key(key):
     """The API key.  May not be None."""
-    global _key
-    assert key != None
-    _key = key
+    global KEY
+    assert key is not None
+    KEY = key
 
 def _get_headers():
-    # So that we can track what library and what version of the
-    # helper library people are using and so that we get a
-    # sense of what versions of python we need to support.
+    """Get all the headers we're going to need:
 
-    if _key == None:
-        raise APIConfigurationException('set_key() must be called before any API operations can be performed.')
+    1. Authorization
+    2. Content-Type
+    3. User-agent
 
-    user_agent = __api_lib_name__ + '/' + __api_version__ + \
-                 '/' + PYTHON_VERSION
-        
-    return {'Authorization': 'Bearer ' + _key, 
+    Note that the User-agent string contains the library name, the libary
+    version, and the python version. This will help us track what people
+    are using, and where we should concentrate our development efforst."""
+
+    if KEY is None:
+        raise APIConfigurationException('set_key() must be called before '
+                                        'any API operations can be performed.')
+
+    user_agent = __api_lib_name__ + '/' + __version__ + '/' + PYTHON_VERSION
+
+    return {'Authorization': 'Bearer ' + KEY,
             'User-Agent': user_agent,
             'Content-Type': 'application/x-www-form-urlencoded'}
+
 
 def get(path, data=None):
     """Executes a GET.
@@ -756,17 +753,17 @@ def get(path, data=None):
     'path' may not be None. Should include the full path to the resource.
     'data' may be None or a dictionary. These values will be appended
     to the path as key/value pairs.
-        
+
     Returns a named tuple that includes:
-        
+
     status: the HTTP status code
     json: the returned JSON-HAL
 
     If the key was not set, throws an APIConfigurationException."""
 
     # Argument error checking.
-    assert path != None
-        
+    assert path is not None
+
     # Open our connection.
     connection = httplib.HTTPSConnection(__host__)
     if __debug_level__ > 0:
@@ -774,20 +771,20 @@ def get(path, data=None):
 
     # Execute the request.
     fullpath = path
-    if data != None:
+    if data is not None:
         fullpath += '?' + urllib.urlencode(data, True)
     connection.request('GET', fullpath, '', _get_headers())
     response = connection.getresponse()
 
-    # Extreact the result.
-    s = response.status
-    j = response.read()
+    # Extract the result.
+    response_status = response.status
+    response_content = response.read()
 
     # Close our connection.
     connection.close()
 
-    # return (status, json)
-    return Result(status=s, json=j)
+    return Result(status=response_status, json=response_content)
+
 
 def post(path, data):
     """Executes a POST.
@@ -797,16 +794,16 @@ def post(path, data):
     'data' may be None or a dictionary.
 
     Returns a named tuple that includes:
-        
+
     status: the HTTP status code
     json: the returned JSON-HAL
-    
+
     If the key was not set, throws an APIConfigurationException."""
 
     # Argument error checking.
-    assert path != None
-    assert data == None or isinstance(data, dict)
-        
+    assert path is not None
+    assert data is None or isinstance(data, dict)
+
     # Open our connection.
     connection = httplib.HTTPSConnection(__host__)
     if __debug_level__ > 0:
@@ -814,20 +811,20 @@ def post(path, data):
 
     # Execute the request.
     encoded_data = ''
-    if data != None:
+    if data is not None:
         encoded_data = urllib.urlencode(data, True)
     connection.request('POST', path, encoded_data, _get_headers())
     response = connection.getresponse()
 
     # Extract the result.
-    s = response.status
-    j = response.read()
+    response_status = response.status
+    response_content = response.read()
 
     # Close our connection.
     connection.close()
 
-    # return (status, json)
-    return Result(status=s, json=j)
+    return Result(status=response_status, json=response_content)
+
 
 def delete(path, data=None):
     """Executes a DELETE.
@@ -836,15 +833,15 @@ def delete(path, data=None):
     'data' may be None or a dictionary.
 
     Returns a named tuple that includes:
-        
+
     status: the HTTP status code
     json: the returned JSON-HAL
 
-    If the key was not set, throws an APIConfigurationException."""    
+    If the key was not set, throws an APIConfigurationException."""
 
     # Argument error checking.
-    assert path != None
-    assert data == None or isinstance(data, dict)
+    assert path is not None
+    assert data is None or isinstance(data, dict)
 
     # Open our connection.
     connection = httplib.HTTPSConnection(__host__)
@@ -853,21 +850,22 @@ def delete(path, data=None):
 
     # Execute the request.
     encoded_data = ''
-    if data != None:
+    if data is not None:
         encoded_data = urllib.urlencode(data, True)
     connection.request('DELETE', path, encoded_data, _get_headers())
     response = connection.getresponse()
 
     # Extract the result.
-    s = response.status
-    j = response.read()
+    response_status = response.status
+    response_content = response.read()
 
     # Close our connection.
     connection.close()
 
     # return (status, json)
-    return Result(status=s, json=j)
-        
+    return Result(status=response_status, json=response_content)
+
+
 def put(path, data):
     """Executes a PUT.
 
@@ -875,16 +873,16 @@ def put(path, data):
     'data' may be None or a dictionary.
 
     Returns a named tuple that includes:
-        
+
     status: the HTTP status code
     json: the returned JSON-HAL
 
     If the key was not set, throws an APIConfigurationException."""
 
     # Argument error checking.
-    assert path != None
-    assert data == None or isinstance(data, dict)
-        
+    assert path is not None
+    assert data is None or isinstance(data, dict)
+
     # Open our connection.
     connection = httplib.HTTPSConnection(__host__)
     if __debug_level__ > 0:
@@ -892,27 +890,28 @@ def put(path, data):
 
     # Execute the request.
     encoded_data = ''
-    if data != None:
+    if data is not None:
         encoded_data = urllib.urlencode(data, True)
     connection.request('PUT', path, encoded_data, _get_headers())
     response = connection.getresponse()
 
     # Extract the result.
-    s = response.status
-    j = response.read()
+    response_status = response.status
+    response_content = response.read()
 
     # Close our connection.
     connection.close()
 
-    return Result(status=s, json=j)
+    return Result(status=response_status, json=response_content)
 
-###
-###  Exceptions.
-###
+#
+# Exceptions.
+#
 
 KEY_STATUS = 'status'
 KEY_MESSAGE = 'message'
 KEY_CODE = 'code'
+
 
 class APIException(Exception):
     """Thown when we don't receive the expected sucess response from an
@@ -923,15 +922,17 @@ class APIException(Exception):
     json_response = None
 
     def __init__(self, http_response, json_response):
+        Exception.__init__(self)
+
         self.http_response = http_response
         self.json_response = json_response
 
-        # That that JSON and turn it into something we can use.
+        #  Try to turn the JSON and turn it into something we can use.
+        #  Could be garbage, in which case we should just ignore it.
         try:
             self._data_struct = json.loads(json_response)
-        except ValueError, e:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(e, j, msg)
+        except ValueError:
+            pass
 
     def get_http_response(self):
         """Return the HTTP response that caused this exception to be
@@ -940,20 +941,33 @@ class APIException(Exception):
         return self.http_response
 
     def get_status(self):
-        """Return the status embedded in the JSON error response body."""
+        """Return the status embedded in the JSON error response body,
+        or an empty string if the JSON couldn't be parsed."""
 
-        return self._data_struct[KEY_STATUS]
+        result = ''
+        if self._data_struct is not None:
+            result = self._data_struct[KEY_STATUS]
+        return result
 
     def get_message(self):
-        """Return the message embedded in the JSON error response body."""
+        """Return the message embedded in the JSON error response body,
+        or an empty string if the JSON couldn't be parsed."""
 
-        return self._data_struct[KEY_MESSAGE]
+        result = ''
+        if self._data_struct is not None:
+            result = self._data_struct[KEY_MESSAGE]
+        return result
 
     def get_code(self):
-        """Return the code embedded in the JSON error response body. This
-        should always match the 'http_response'"""
+        """Return the code embedded in the JSON error response body,
+        or an empty string if the JSON couldn't be parsed. This
+        should always match the 'http_response'."""
 
-        return self._data_struct[KEY_CODE]
+        result = ''
+        if self._data_struct is not None:
+            result = self._data_struct[KEY_CODE]
+        return result
+
 
 class APIConfigurationException(Exception):
     """Thrown when the API isn't properly configured."""
@@ -961,11 +975,13 @@ class APIConfigurationException(Exception):
     msg = None
 
     def __init__(self, msg):
+        Exception.__init__(self)
         self.msg = msg
 
     def get_message(self):
         """Returns the error message."""
         return self.msg
+
 
 class APIDataException(Exception):
     """Thown when we can't parse the data returned by an API call."""
@@ -979,6 +995,8 @@ class APIDataException(Exception):
 
         'msg' is additional information that might be valuable for
         determining the root cause of the exception."""
+
+        Exception.__init__(self)
 
         self.base_exception = e
         self.offending_data = offending_data
@@ -1001,10 +1019,11 @@ class APIDataException(Exception):
         considered useful when throwing this exception."""
 
         return self.msg
-    
-###
-###  Utility functions.
-###
+
+#
+# Utility functions.
+#
+
 
 def process_embed(embed_items=None,
                   embed_tracks=None,
@@ -1012,7 +1031,7 @@ def process_embed(embed_items=None,
     """Returns an embed field value based on the parameters."""
 
     result = None
-    
+
     embed = ''
     if embed_items:
         embed = 'items'
@@ -1040,7 +1059,7 @@ def process_embed_override(href_embed=None,
     final_items = None
     final_tracks = None
     final_metadata = None
-    
+
     # First, figure out what was embedded in the original href.
     # If any of the embeds are there, flip the final to True
     if href_embed:
@@ -1051,27 +1070,26 @@ def process_embed_override(href_embed=None,
         if 'metadata' in href_embed:
             final_metadata = True
 
-    # Second, override the what we have.  
+    # Second, override the what we have.
     # None >> Do nothing
     # True >> Set to True
     # False >> Set to None
-    if embed_items != None:
-        if embed_items == True:
+    if embed_items is not None:
+        if embed_items is True:
             final_items = True
         else:
             final_items = None
-    if embed_tracks != None:
-        if embed_tracks == True:
+    if embed_tracks is not None:
+        if embed_tracks is True:
             final_tracks = True
         else:
             final_tracks = None
-    if embed_metadata != None:
-        if embed_metadata == True:
+    if embed_metadata is not None:
+        if embed_metadata is True:
             final_metadata = True
         else:
             final_metadata = None
 
-    return process_embed(embed_items=final_items, 
+    return process_embed(embed_items=final_items,
                          embed_tracks=final_tracks,
                          embed_metadata=final_metadata)
-

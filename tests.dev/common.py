@@ -4,7 +4,7 @@
 
 import sys
 sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
+from clarify_python_2 import clarify
 
 def bundle_list_map(func):
     """Execute func on every bundle."""
@@ -13,7 +13,7 @@ def bundle_list_map(func):
 
     while has_next:
         # Get a page and perform the requested function.
-        bl = op3nvoice.get_bundle_list(next_href)
+        bl = clarify.get_bundle_list(next_href)
         for i in bl['_links']['items']:
             href = i['href']
             func(href)

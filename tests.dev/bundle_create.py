@@ -1,36 +1,37 @@
 #!/usr/bin/python
 
-##
-##  Some test functions used to sanity check during development. Not
-##  unit tests.
-##
+"""
+Some test functions used to sanity check during development. Not
+unit tests.
+"""
 
 import sys
-sys.path.append('..')
-from op3nvoice_python_2 import op3nvoice
+sys.path.insert(0, '..')
+from clarify_python_2 import clarify
 
-ak = None # our app key.
 
-def set_appkey(key):
-    global ak
-    ak = key
+def create_15_bundles():
+    """Create 15 bundles without any media."""
 
-def create_11():
-    op3nvoice.set_key(ak)
-    for i in range(0,11):
-        br = op3nvoice.create_bundle(str(i))
-        href = br['_links']['self']['href']
-        b = op3nvoice.get_bundle(href)
-        print 'Created bundle ' + href + ' with name: ' + b['name']
+    for i in range(0, 15):
+        bundle_ref = clarify.create_bundle(str(i))
+        href = bundle_ref['_links']['self']['href']
+        bundle = clarify.get_bundle(href)
+        print '*** Created bundle ' + href + ' with name: ' + bundle['name']
 
-def all(_ak=None):
-    if _ak != None:
-        set_appkey(_ak)
-    
-    create_11()
+
+def all_tests(apikey):
+    """Set API key and call all test functions."""
+
+    clarify.set_key(apikey)
+
+    print '===== create_15_bundles() ====='
+    create_15_bundles()
 
 if __name__ == '__main__':
 
-    set_appkey(sys.argv[1])
-    
-    all()
+    if len(sys.argv) < 2:
+        print 'Usage: ' + sys.argv[0] + ' <apikey>'
+        exit(1)
+
+    all_tests(sys.argv[1])

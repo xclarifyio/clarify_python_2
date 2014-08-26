@@ -18,34 +18,32 @@ readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
-    name='op3nvoice_python_2',
-    version='0.7.0',
-    description='The OP3Nvoice Python 2 Helper Library wraps the entire OP3Nvoice API in Python 2.x function calls.',
+    name='clarify_python_2',
+    version='1.0.0',
+    description='The Clarify Python 2 Helper Library wraps the entire Clarify API in Python 2.x function calls.',
     long_description=readme + '\n\n' + history,
     author='Paul Murphy',
-    author_email='murphy@op3nvoice.com',
-    url='https://github.com/murphy/op3nvoice_python_2',
+    author_email='murphy@clarify.com',
+    url='https://github.com/murphy/clarify_python_2',
     packages=[
-        'op3nvoice_python_2',
+        'clarify_python_2',
     ],
-    package_dir={'op3nvoice_python_2':
-                 'op3nvoice_python_2'},
+    package_dir={'clarify_python_2':
+                 'clarify_python_2'},
     include_package_data=True,
     install_requires=[
     ],
     license="BSD",
     zip_safe=False,
-    keywords='op3nvoice_python_2',
+    keywords='clarify_python_2',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: Beta',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
     ],
     test_suite='tests',
 )

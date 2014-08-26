@@ -31,3 +31,9 @@ History
 ++++++++++++++++++
 
 * Removed 'source' attribute from bundle.
+
+1.0.0 (2014-08-26)
+++++++++++++++++++
+
+* Updated to the 1.0 API.
+* NB: The semantics of delete_track() have changed. delete_track() now takes an href to a track. To delte a track by index you now need to call delete_track_at_index().
