@@ -3,22 +3,16 @@
 History
 -------
 
-0.1.0 (2014-04-20)
+1.0.0 (2014-08-26)
 ++++++++++++++++++
 
-* First release.
+* Updated to the 1.0 API.
+* NB: The semantics of delete_track() have changed. delete_track() now takes an href to a track. To delte a track by index you now need to call delete_track_at_index().
 
-0.3.0 (2014-04-26)
+0.9.0 (2014-06-16)
 ++++++++++++++++++
 
-* Code cleanup.
-* get_bundle_href() changed to get_self_href().
-* Switched to new style classes.
-
-0.7.0 (2014-04-30)
-++++++++++++++++++
-
-* New repo name.
+* Removed 'source' attribute from bundle.
 
 0.8.0 (2014-05-04)
 ++++++++++++++++++
@@ -27,13 +21,20 @@ History
 * Separated REST cover and object libraries.
 * Moved configuration variables into module's __init__.py file.
 
-0.9.0 (2014-06-16)
+0.7.0 (2014-04-30)
 ++++++++++++++++++
 
-* Removed 'source' attribute from bundle.
+* New repo name.
 
-1.0.0 (2014-08-26)
+0.3.0 (2014-04-26)
 ++++++++++++++++++
 
-* Updated to the 1.0 API.
-* NB: The semantics of delete_track() have changed. delete_track() now takes an href to a track. To delte a track by index you now need to call delete_track_at_index().
+* Code cleanup.
+* get_bundle_href() changed to get_self_href().
+* Switched to new style classes.
+
+0.1.0 (2014-04-20)
+++++++++++++++++++
+
+* First release.
+
