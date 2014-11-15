@@ -23,8 +23,8 @@ setup(
     description='The Clarify Python 2 Helper Library wraps the entire Clarify API in Python 2.x function calls.',
     long_description=readme + '\n\n' + history,
     author='Paul Murphy',
-    author_email='murphy@clarify.com',
-    url='https://github.com/murphy/clarify_python_2',
+    author_email='murphy@clarify.io',
+    url='https://github.com/Clarify/clarify_python_2',
     packages=[
         'clarify_python_2',
     ],
@@ -33,11 +33,11 @@ setup(
     include_package_data=True,
     install_requires=[
     ],
-    license="BSD",
+    license="MIT",
     zip_safe=False,
-    keywords='clarify_python_2',
+    keywords='clarify_python_2 clarify',
     classifiers=[
-        'Development Status :: Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',

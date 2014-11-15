@@ -5,7 +5,6 @@ TODO
 Structural
 ----------
 
-* PIP packaging (https://github.com/audreyr/cookiecutter-pypackage)
 * Implement Scrutinizer
 
 Documentation
