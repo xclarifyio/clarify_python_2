@@ -1,10 +1,13 @@
 """
-clarify.py
+.. module:: clarify
+   : synopsis: foobar
 
-All of the functions covering the REST API calls.
-These calls (except for delete_* which are void) all return a python
-data structure equivalent to the JSON returned by the API.
 """
+# """
+# .. module:: clarify
+#    : synopsis: 'All of the functions covering the REST API calls. These calls (except for delete_* which are void) all return a python data structure equivalent to the JSON returned by the API.'
+
+# """
 
 import sys
 import urllib
@@ -211,14 +214,32 @@ def create_bundle(name=None, media_url=None, audio_channel=None,
     return result
 
 
+# def delete_bundle(href=None):
+#     """Delete a bundle.
+
+#     'href' the relative href to the bundle. May not be None.
+
+#     Returns nothing.
+
+#     If the response status is not 204, throws an APIException."""
+
+#     # Argument error checking.
+#     assert href is not None
+
+#     raw_result = delete(href)
+
+#     if raw_result.status != 204:
+#         raise APIException(raw_result.status, raw_result.json)
+
 def delete_bundle(href=None):
-    """Delete a bundle.
+    """
+    Delete a bundle.
 
-    'href' the relative href to the bundle. May not be None.
-
-    Returns nothing.
-
-    If the response status is not 204, throws an APIException."""
+    :param href: the relative href to the bundle.
+    :type href: string, may not be None
+    :return: nothing
+    :raises APIException: If the response code is not 204.
+    """
 
     # Argument error checking.
     assert href is not None
@@ -591,7 +612,7 @@ def delete_track(href=None):
         raise APIException(raw_result.status, raw_result.json)
 
 
-def search(href=None, query=None, query_field=None, query_filter=None,
+def search(href=None, query=None, query_fields=None, query_filter=None,
            limit=None, embed_items=None, embed_tracks=None,
            embed_metadata=None):
 
@@ -600,7 +621,7 @@ def search(href=None, query=None, query_field=None, query_filter=None,
     'href' the relative href to the bundle list to retriev. If None, the
     first bundle list will be returned.
     'query' See API docs for full description. May not be None.
-    'query_field' See API docs for full description. May be None.
+    'query_fields' See API docs for full description. May be None.
     'query_filter' See API docs for full description. May be None.
     'limit' the maximum number of bundles to include in the result.
     'embed_items' whether or not to expand the bundle data into the result.
@@ -623,7 +644,7 @@ def search(href=None, query=None, query_field=None, query_filter=None,
     assert limit is None or limit > 0
 
     if href is None:
-        j = _search_p1(query, query_field, query_filter, limit, embed_items,
+        j = _search_p1(query, query_fields, query_filter, limit, embed_items,
                        embed_tracks, embed_metadata)
     else:
         j = _search_pn(href, limit, embed_items, embed_tracks, embed_metadata)
@@ -641,7 +662,7 @@ def search(href=None, query=None, query_field=None, query_filter=None,
     return result
 
 
-def _search_p1(query=None, query_field=None, query_filter=None, limit=None,
+def _search_p1(query=None, query_fields=None, query_filter=None, limit=None,
                embed_items=None, embed_tracks=None,
                embed_metadata=None):
     """Function called to retrieve the first page."""
@@ -652,8 +673,8 @@ def _search_p1(query=None, query_field=None, query_filter=None, limit=None,
     data = None
     fields = {}
     fields['query'] = query
-    if query_field is not None:
-        fields['query_field'] = query_field
+    if query_fields is not None:
+        fields['query_fields'] = query_fields
     if query_filter is not None:
         fields['filter'] = query_filter
     if limit is not None:
