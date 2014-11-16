@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='clarify_python_2',
-    version='1.0.0',
+    version='1.0.1',
     description='The Clarify Python 2 Helper Library wraps the entire Clarify API in Python 2.x function calls.',
     long_description=readme + '\n\n' + history,
     author='Paul Murphy',
