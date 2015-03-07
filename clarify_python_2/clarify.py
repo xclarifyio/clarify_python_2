@@ -1114,3 +1114,73 @@ def process_embed_override(href_embed=None,
     return process_embed(embed_items=final_items,
                          embed_tracks=final_tracks,
                          embed_metadata=final_metadata)
+
+def get_embedded_items(result_object):
+    """
+    Given a result_object (returned by a previous API call), return
+    a list of embedded items.
+
+    'result_object' a JSON object returned by a previous API call. May not
+    be None.
+
+    Returns a list, which may be empty if no embedded items were found.
+    """
+
+    # Argument error checking.
+    assert result_object is not None
+
+    result = []
+
+    embedded_objects = result_object['_embedded']
+    if embedded_objects:
+        result = embedded_objects['items']
+
+    return result
+
+def get_link_href(result_object, link_relation):
+    """
+    Given a result_object (returned by a previous API call), return
+    the link href for a link relation.
+    
+    'result_object' a JSON object returned by a previous API call. May not
+    be None.
+    'link_relation' the link relation for which href is required.
+    
+    Returns None if the link does not exist.
+    """
+
+    # Argument error checking.
+    assert result_object is not None
+
+    result = None
+
+    link = result_object['_links'].get(link_relation)
+    if link:
+        result = link.get('href')
+
+    return result
+
+def get_embedded(result_object, link_relation):
+    """
+    Given a result_object (returned by a previous API call), return
+    the embedded object for link_relation.
+    
+    'result_object' a JSON object returned by a previous API call. This
+    is one of the items extracted from the '_embedded' list, either by
+    index reference or iterating after a call to
+    get_embedded_items(). May not be None.
+    'link_relation' the link relation for which href is required.
+    
+    Returns None if the embedded object does not exist.
+    """
+
+    # Argument error checking.
+    assert result_object is not None
+
+    result = None
+    
+    embedded_object = result_object['_embedded']
+    if embedded_object:
+        result = embedded_object.get(link_relation)
+
+    return result
