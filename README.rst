@@ -1,8 +1,10 @@
 ===============================
-Clarify Python 2 Helper Library
+Clarify Python <=2.6 Helper Library
 ===============================
 
-Python 2.x helper library for the Clarify API
+For Python 2.7 and 3.x, use `https://github.com/Clarify/clarify_python <https://github.com/Clarify/clarify_python>`_
+
+Python 2.6 helper library for the Clarify API
 
 * Free software: MIT license
 
@@ -54,7 +56,7 @@ Once you've initialied the environment with your API key, you load a file like t
 
 	clarify.create_bundle(name='test bundle', media_url='http://example.com/sample-audio-file.wav')
 
-Naming the bundle is optional.  
+Naming the bundle is optional.
 
 Here are some audio files you can use for testing:
 
@@ -65,7 +67,7 @@ Here are some audio files you can use for testing:
 	http://media.clarify.io/audio/books/dorothyandthewizardinoz_01_baum_64kb.mp3
 
 Hint: You don't have to download these files. Instead you can pass us these urls via the create_bundle() method shown above.
-	
+
 Searching Audio
 ^^^^^^^^^^^^^^^
 
@@ -94,7 +96,7 @@ Then you can process and interact the results however you wish. The code below s
             	print str(search_hit['start']) + ' -- ' + str(search_hit['end'])
 
     	    ++index
-	
+
 And here are the results using the *Wizard of Oz* clip we loaded.
 
 ::
